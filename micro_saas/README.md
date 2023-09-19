@@ -1,1 +1,1 @@
-# whatsapp_odoo
+# odoo_micro_saas
