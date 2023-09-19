@@ -58,3 +58,14 @@ We're thrilled to offer this module to the community as a free resource for effi
 Your support can help us create more features, improve stability, and make it even more valuable for users worldwide. Together, we can make a positive impact on the Odoo community and simplify development processes for all users.
 
 Thank you for your support!
+
+<!-- Imagen 1 -->
+<img src="https://raw.githubusercontent.com/davidmonterocrespo24/odoo_micro_saas/15.0/micro_saas/static/1.jpg" alt="Imagen 1" width="300"/>
+
+<!-- Imagen 2 -->
+<img src="https://raw.githubusercontent.com/davidmonterocrespo24/odoo_micro_saas/15.0/micro_saas/static/2.jpg" alt="Imagen 2" width="300"/>
+
+<!-- Imagen 3 -->
+<img src="https://raw.githubusercontent.com/davidmonterocrespo24/odoo_micro_saas/15.0/micro_saas/static/3.jpg" alt="Imagen 3" width="300"/>
+
+
