@@ -51,6 +51,10 @@ Git is a distributed version control system. To install Git:
 
 We're thrilled to offer this module to the community as a free resource for efficient Odoo Docker instance management. We welcome contributions, feedback, and suggestions from the community to enhance and improve this tool further.
 
-Your support can help us create more features, improve stability, and make it even more valuable for users worldwide. Please feel free to get involved by reporting issues, submitting pull requests, or providing feedback on how we can make this module even better. Together, we can make a positive impact on the Odoo community and simplify development processes for all users.
+- **Contribute:** Help us improve this module by contributing code, reporting issues, or suggesting enhancements. Your contributions are valuable!
+- **Star the Repository:** If you find this module useful, please consider starring the repository. Your support motivates us to continue development.
+- **Spread the Word:** Share this module with your network and colleagues. Help us reach more users in the Odoo community.
+
+Your support can help us create more features, improve stability, and make it even more valuable for users worldwide. Together, we can make a positive impact on the Odoo community and simplify development processes for all users.
 
 Thank you for your support!
