@@ -60,12 +60,12 @@ Your support can help us create more features, improve stability, and make it ev
 Thank you for your support!
 
 <!-- Imagen 1 -->
-<img src="https://raw.githubusercontent.com/davidmonterocrespo24/odoo_micro_saas/15.0/micro_saas/static/1.jpg" alt="Imagen 1" width="300"/>
+<img src="https://raw.githubusercontent.com/davidmonterocrespo24/odoo_micro_saas/15.0/micro_saas/static/description/1.jpg" alt="Imagen 1" width="300"/>
 
 <!-- Imagen 2 -->
-<img src="https://raw.githubusercontent.com/davidmonterocrespo24/odoo_micro_saas/15.0/micro_saas/static/2.jpg" alt="Imagen 2" width="300"/>
+<img src="https://raw.githubusercontent.com/davidmonterocrespo24/odoo_micro_saas/15.0/micro_saas/static/description/2.jpg" alt="Imagen 2" width="300"/>
 
 <!-- Imagen 3 -->
-<img src="https://raw.githubusercontent.com/davidmonterocrespo24/odoo_micro_saas/15.0/micro_saas/static/3.jpg" alt="Imagen 3" width="300"/>
+<img src="https://raw.githubusercontent.com/davidmonterocrespo24/odoo_micro_saas/15.0/micro_saas/static/description/3.jpg" alt="Imagen 3" width="300"/>
 
 
