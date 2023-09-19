@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_create,perm_write,perm_unlink
+acces_odoo_docker_instance,access_odoo_docker_instance,model_odoo_docker_instance,,1,1,1,1
+acces_repository_repository,access_repository_repository,model_repository_repo,,1,1,1,1
+acces_repository_repository_line,access_repository_repository_line,model_repository_repo_line,,1,1,1,1

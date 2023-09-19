@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record model="ir.ui.view" id="view_odoo_docker_instance_form">
+        <field name="name">odoo.docker.instance.form</field>
+        <field name="model">odoo.docker.instance</field>
+        <field name="arch" type="xml">
+            <form string="Odoo Docker Instance">
+                <header>
+                    <button string="Start Instance" type="object" name="start_instance"
+                            class="oe_highlight o_button_icon o_icon_play" states="stopped"/>
+                    <button string="Stop Instance" type="object" name="stop_instance" states="running"
+                            class="o_button_icon o_icon_stop"/>
+                    <button string="Restart Instance" type="object" name="restart_instance" states="running"
+                            class="o_button_icon o_icon_refresh"/>
+                    <button string="Cancel Instance" type="object" name="cancel_instance" states="draft"
+                            class="o_button_icon o_icon_cancel"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="instance_url" readonly="1" widget="url"/>
+                        </group>
+                        <group>
+                            <field name="http_port"/>
+                            <field name="longpolling_port"/>
+                            <field name="addons_path"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Repository">
+                            <field name="repository_line">
+                                <tree string="Repository and Branch" editable="bottom">
+                                    <field name="repository_id"/>
+                                    <field name="name"/>
+                                    <field name="is_clone" readonly="1" widget="boolean_button"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    <group>
+                        <field name="log" colspan="4" nolabel="1"
+                               style=" width: 100%; height: 600px;  overflow-y: auto;color:rgb(255,255,255);  background: black;"
+                               widget="html" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="view_odoo_docker_instance_kanban">
+        <field name="name">odoo.docker.instance.kanban</field>
+        <field name="model">odoo.docker.instance</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" archivable="false">
+                <templates>
+                    <t t-name="kanban-box">
+
+                        <div class="oe_kanban_global_click">
+                             <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_right">
+                                        <span t-attf-class="badge #{['draft', 'cancel'].indexOf(record.state.raw_value) > -1 ? 'badge-secondary' : ['stopped'].indexOf(record.state.raw_value) > -1 ? 'badge-danger' : ['running'].indexOf(record.state.raw_value) > -1 ? 'badge-success' : ''}">
+                                            <field name="state"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            <div class="oe_kanban_card">
+                                <div class="oe_kanban_card_header">
+                                    <div class="oe_kanban_card_header_title">
+                                        <field name="name"/>
+                                    </div>
+
+                                </div>
+                                <div class="oe_kanban_card_content">
+                                    <div class="oe_kanban_card_content_field">
+                                        <field name="instance_url" widget="url"/>
+                                    </div>
+                                    <div class="oe_kanban_card_content_field">
+                                        <field name="http_port"/>
+                                    </div>
+                                    <div class="oe_kanban_card_content_field">
+                                        <field name="longpolling_port"/>
+                                    </div>
+                                    <div class="oe_kanban_card_content_field">
+                                        <field name="addons_path"/>
+                                    </div>
+                                </div>
+                                <br/>
+
+                                <div class="oe_kanban_bottom_right">
+                                    <div class="oe_kanban_card_manage">
+                                        <button type="object" name="start_instance" class="btn btn-primary">Start
+                                        </button>
+                                        <button type="object" name="stop_instance" class="btn btn-danger">Stop</button>
+                                        <button type="object" name="restart_instance" class="btn btn-warning">Restart
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <act_window id="action_odoo_docker_instance"
+                name="Odoo Docker Instance"
+                res_model="odoo.docker.instance"
+                view_mode="kanban,tree,form"
+    />
+    <!-- Acción para abrir la vista de formulario -->
+    <record id="action_repository_repo_form" model="ir.actions.act_window">
+        <field name="name">RepositoryRepo</field>
+        <field name="res_model">repository.repo</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <!-- Menú principal -->
+    <menuitem id="menu_odoo_instance_management" name="Instance Management" sequence="10">
+    </menuitem>
+    <menuitem id="menu_odoo_instances" name="Odoo Instances" parent="menu_odoo_instance_management"
+              action="action_odoo_docker_instance" sequence="10"/>
+
+
+    <!-- Menú para acceder a la vista de formulario -->
+    <menuitem id="menu_repository_repo" name="Repository Repos" parent="menu_odoo_instance_management" sequence="10"/>
+    <menuitem id="menu_repository_repo_form" name="Repository " parent="menu_repository_repo"
+              action="action_repository_repo_form" sequence="10"/>
+
+
+</odoo>

@@ -1,0 +1,35 @@
+version: '2'
+services:
+  db:
+    image: postgres:15
+    user: root
+    environment:
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+      - POSTGRES_DB=postgres
+    restart: always             # run as a service
+    volumes:
+        - ./postgresql:/var/lib/postgresql/data
+
+  odoo15:
+    image: odoo:15
+    user: root
+    depends_on:
+      - db
+    ports:
+      - "{{HTTP-PORT}}:8069"  # Reemplaza {{HTTP-PORT}} con el puerto dinámico
+      - "{{LONGPOLLING-PORT}}:8072"  # Reemplaza {{LONGPOLLING-PORT}} con el puerto dinámico
+    tty: true
+    command: --
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo
+    volumes:
+      #- /etc/timezone:/etc/timezone:ro
+      #- /etc/localtime:/etc/localtime:ro
+      # - ./entrypoint.sh:/entrypoint.sh   # if you want to install additional Python packages, uncomment this line!
+      - ./addons:/mnt/extra-addons
+      - ./etc:/etc/odoo
+      - ./data:/var/lib/odoo
+    restart: always

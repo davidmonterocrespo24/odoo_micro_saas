@@ -1,0 +1,13 @@
+<odoo>
+
+    <!-- Vista de árbol para RepositoryRepo -->
+    <record id="view_repository_repo_tree" model="ir.ui.view">
+        <field name="name">repository.repo.tree</field>
+        <field name="model">repository.repo</field>
+        <field name="arch" type="xml">
+            <tree string="Repository and Branch" editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+</odoo>
