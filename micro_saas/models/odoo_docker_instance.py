@@ -12,7 +12,8 @@ class OdooDockerInstance(models.Model):
     _description = 'Odoo Docker Instance'
 
     name = fields.Char(string='Instance Name', required=True)
-    state = fields.Selection([('draft', 'Draft'),('stopped', 'Stopped'), ('running', 'Running'),('cancel', 'Cancel')], string='State', default='draft')
+    state = fields.Selection([('draft', 'Draft'), ('stopped', 'Stopped'), ('running', 'Running'), ('cancel', 'Cancel')],
+                             string='State', default='draft')
     http_port = fields.Char(string='HTTP Port')
     longpolling_port = fields.Char(string='Longpolling Port')
 
@@ -27,10 +28,12 @@ class OdooDockerInstance(models.Model):
         for instance in self:
             addons_path = []
             for line in instance.repository_line:
-                repo_path = name_repo_url = line.repository_id.name.split('/')[-1]
-                repo_path = name_repo_url.replace('.git', '').replace('.', '_').replace('-', '_').replace(' ', '_').replace(
-                    '/', '_').replace('\\', '_') + "_branch_" + line.name.replace('.', '_')
-                addons_path.append("/mnt/extra-addons/"+repo_path)
+                if line.name:
+                    name_repo_url = line.repository_id.name.split('/')[-1]
+                    repo_path = name_repo_url.replace('.git', '').replace('.', '_').replace('-', '_').replace(' ',
+                                                                                                              '_').replace(
+                        '/', '_').replace('\\', '_') + "_branch_" + line.name.replace('.', '_')
+                    addons_path.append("/mnt/extra-addons/" + repo_path)
             instance.addons_path = ','.join(addons_path)
 
     def add_to_log(self, message):
@@ -135,7 +138,7 @@ class OdooDockerInstance(models.Model):
                 if not os.path.exists(repo_path):
                     os.makedirs(repo_path)
                 try:
-                    cmd = f"git clone -b {line.name} {line.repository_id.name} {repo_path}"
+                    cmd = f"git clone {line.repository_id.name} -b {line.name} {repo_path}"
                     subprocess.run(cmd, shell=True, check=True)
                     self.add_to_log(f"[INFO] Repositorio clonado: {line.repository_id.name} (Rama: {line.name})")
                     line.is_clone = True
@@ -273,7 +276,6 @@ class OdooDockerInstance(models.Model):
 
         # Luego, elimina el registro del modelo
         return super(OdooDockerInstance, self).unlink()
-
 
     def cancel_instance(self):
         self.write({'state': 'cancel'})
