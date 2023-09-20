@@ -1,10 +1,12 @@
 from odoo import models, fields
 
+
 class RepositoryRepo(models.Model):
     _name = 'repository.repo'
     _description = 'Repository and Branch'
 
     name = fields.Char(string='Repository Name')
+
 
 class RepositoryRepoLine(models.Model):
     _name = 'repository.repo.line'
