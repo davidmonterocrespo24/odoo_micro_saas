@@ -1,0 +1,12 @@
+[flake8]
+max-line-length = 108
+max-complexity = 26
+# B = bugbear
+# B9 = bugbear opinionated (incl line length)
+select = C,E,F,W,B,B9
+# E203: whitespace before ':' (black behaviour)
+# E501: flake8 line length (covered by bugbear B950)
+# W503: line break before binary operator (black behaviour)
+ignore = E203,E501,W503,W504,E266,E126,E125,F401,E501,E501,C901,F841,W291,E131,W293,F811,E265
+per-file-ignores=
+    __init__.py:F401
