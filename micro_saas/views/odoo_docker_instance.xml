@@ -60,13 +60,13 @@
                     <t t-name="kanban-box">
 
                         <div class="oe_kanban_global_click">
-                             <div class="o_kanban_record_bottom">
-                                    <div class="oe_kanban_bottom_right">
-                                        <span t-attf-class="badge #{['draft', 'cancel'].indexOf(record.state.raw_value) > -1 ? 'badge-secondary' : ['stopped'].indexOf(record.state.raw_value) > -1 ? 'badge-danger' : ['running'].indexOf(record.state.raw_value) > -1 ? 'badge-success' : ''}">
-                                            <field name="state"/>
-                                        </span>
-                                    </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_right">
+                                    <span t-attf-class="badge #{['draft', 'cancel'].indexOf(record.state.raw_value) > -1 ? 'badge-secondary' : ['stopped'].indexOf(record.state.raw_value) > -1 ? 'badge-danger' : ['running'].indexOf(record.state.raw_value) > -1 ? 'badge-success' : ''}">
+                                        <field name="state"/>
+                                    </span>
                                 </div>
+                            </div>
                             <div class="oe_kanban_card">
                                 <div class="oe_kanban_card_header">
                                     <div class="oe_kanban_card_header_title">
