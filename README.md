@@ -23,10 +23,6 @@ The **Micro SaaS - Odoo Docker Instance Management** module is a powerful and fl
 
 
 
----
-title: TODO
----
-
 # TODO List
 - [ ] Enhance the output of log messages for better readability and information.
 - [ ] Move the functions for executing version control commands to a `/lib/git_utils.py` file for better code organization.
