@@ -21,6 +21,19 @@ The **Micro SaaS - Odoo Docker Instance Management** module is a powerful and fl
 - **Flexibility:** Easily adapt instances to individual project needs by customizing configuration files.
 - **Scalability:** Scale vertically by adding new instances as needed, without complications or disruptions to existing projects.
 
+
+
+---
+title: TODO
+---
+
+# TODO List
+- [ ] Enhance the output of log messages for better readability and information.
+- [ ] Move the functions for executing version control commands to a `/lib/git_utils.py` file for better code organization.
+- [ ] Change the `branch` field of the `repository.repo` model to a new model as per project requirements.
+- [ ] Implement enhancements to the `repository` model to enable operations such as clone, push, and pull on repositories.
+- [ ] Create a scheduled task (cron) to automatically pull all repositories and rebuild instances with the latest changes. Ensure this task runs at desired intervals.
+
 ## Installation Guide
 
 ### Docker
