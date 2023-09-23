@@ -145,9 +145,8 @@ class OdooDockerInstance(models.Model):
     def _clone_repositories(self):
         for instance in self:
             for line in instance.repository_line:
-                intance_path = os.path.join(get_resource_path('micro_saas', 'data'), instance.name)
-                name = self._get_repo_name(line, instance)
-                repo_path = os.path.join(intance_path, "addons", name)
+                repo_name = self._get_repo_name(line)
+                repo_path = os.path.join(instance.instance_data_path, "addons", repo_name)
                 if not os.path.exists(repo_path):
                     self._makedirs(repo_path)
                 try:
@@ -166,7 +165,7 @@ class OdooDockerInstance(models.Model):
 
     def _create_odoo_conf(self):
         for instance in self:
-            odoo_conf_path = os.path.join(get_resource_path('micro_saas', 'data', instance.name), "etc", 'odoo.conf')
+            odoo_conf_path = os.path.join(self.instance_data_path, "etc", 'odoo.conf')
             if not os.path.exists(os.path.dirname(odoo_conf_path)):
                 self._makedirs(os.path.dirname(odoo_conf_path))
             addons_path = instance.addons_path
@@ -230,7 +229,7 @@ class OdooDockerInstance(models.Model):
 
         # Ruta al archivo docker-compose.yml modificado
         self.add_to_log("[INFO] Path to modified docker-compose.yml file")
-        modified_path = get_resource_path('micro_saas', 'data', self.name) + '/docker-compose.yml'
+        modified_path = self.instance_data_path + '/docker-compose.yml'
 
         # cargar el archivo docker-compose.yml en el campo binario docker_compose_file
         try:
@@ -251,7 +250,7 @@ class OdooDockerInstance(models.Model):
             if instance.state == 'running':
                 self.add_to_log("[INFO] Stopping Odoo Instance")
                 # Ruta al archivo docker-compose.yml modificado
-                modified_path = get_resource_path('micro_saas', 'data', instance.name) + '/docker-compose.yml'
+                modified_path = instance.instance_data_path + '/docker-compose.yml'
 
                 try:
                     # Ejecuta el comando de Docker Compose para detener la instancia
@@ -268,7 +267,7 @@ class OdooDockerInstance(models.Model):
             if instance.state == 'running':
                 self.add_to_log("[INFO] Restarting Odoo Instance")
                 # Ruta al archivo docker-compose.yml modificado
-                modified_path = get_resource_path('micro_saas', 'data', instance.name) + '/docker-compose.yml'
+                modified_path = instance.instance_data_path  + '/docker-compose.yml'
                 try:
                     # Ejecuta el comando de Docker Compose para detener la instancia
                     cmd = f"docker-compose -f {modified_path} restart"
@@ -286,7 +285,7 @@ class OdooDockerInstance(models.Model):
             if instance.state == 'running':
                 self.add_to_log("[INFO] Removing Odoo Instance")
                 # Ruta al archivo docker-compose.yml modificado
-                modified_path = get_resource_path('micro_saas', 'data', instance.name) + '/docker-compose.yml'
+                modified_path = instance.instance_data_path  + '/docker-compose.yml'
 
                 try:
                     # Ejecuta el comando de Docker Compose para detener y eliminar los contenedores
@@ -298,10 +297,8 @@ class OdooDockerInstance(models.Model):
                     # Maneja cualquier error que pueda ocurrir al detener Docker Compose
                     pass
                 try:
-
-                    path = get_resource_path('micro_saas', 'data', instance.name)
                     # borra todos los archivos de la instancia y carpetas
-                    for root, dirs, files in os.walk(path, topdown=False):
+                    for root, dirs, files in os.walk(instance.instance_data_path , topdown=False):
                         for name in files:
                             os.remove(os.path.join(root, name))
                         for name in dirs:
