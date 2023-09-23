@@ -137,9 +137,9 @@ class OdooDockerInstance(models.Model):
                 subprocess.run(["sudo", "chmod", "-R", "777", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
                 os.makedirs(path)
             except Exception as e:
-                 _logger.info(f"Error while creating directory {path}: ")
+                 _logger.info(f"Error while creating directory {path}: {str(e)}")
             raise UserError(
-                f"Error while creating directory {path}: ")
+                f"Error while creating directory {path} : {str(e)}")
 
     def _clone_repositories(self):
         for instance in self:
