@@ -181,8 +181,9 @@ class OdooDockerInstance(models.Model):
         try:
             subprocess.run(["docker", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
             return True
-        except subprocess.CalledProcessError:
+        except Exception as e:
             self.add_to_log("[ERROR] Docker no está instalado en el sistema.")
+            self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8') if hasattr(e, 'stderr') else str(e))
             self.write({'state': 'error'})
             return False
 
@@ -191,8 +192,9 @@ class OdooDockerInstance(models.Model):
         try:
             subprocess.run(["docker-compose", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
             return True
-        except subprocess.CalledProcessError:
+        except Exception as e:
             self.add_to_log("[ERROR] Docker Compose no está instalado en el sistema.")
+            self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8') if hasattr(e, 'stderr') else str(e))
             self.write({'state': 'error'})
             return False
 
