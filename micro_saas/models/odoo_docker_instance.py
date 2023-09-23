@@ -128,9 +128,7 @@ class OdooDockerInstance(models.Model):
         try:
             os.makedirs(path)
         except Exception as e:
-            self.add_to_log(
-                "[ERROR] No se pudo crear la carpeta de datos de la instancia. Verifique los permisos.")
-            self.add_to_log("[ERROR]  " + str(e))
+            raise Exception(f"Error while creating directory {path}: {str(e) if hasattr(e, 'stderr') else e}.Check the user permissions.")
 
     def _clone_repositories(self):
         for instance in self:
@@ -143,11 +141,11 @@ class OdooDockerInstance(models.Model):
                 try:
                     cmd = f"git clone {line.repository_id.name} -b {line.name} {repo_path}"
                     subprocess.run(cmd, shell=True, check=True)
-                    self.add_to_log(f"[INFO] Repositorio clonado: {line.repository_id.name} (Rama: {line.name})")
+                    self.add_to_log(f"[INFO] Repository cloned: {line.repository_id.name} (Branch: {line.name})")
                     line.is_clone = True
                 except Exception as e:
                     self.add_to_log(
-                        f"[ERROR] Error al clonar el repositorio: {line.repository_id.name} (Rama: {line.name})")
+                        f"[ERROR] Error to clone repository: {line.repository_id.name} (Branch: {line.name})")
                     # error trace
                     if hasattr(e, 'stderr') and e.stderr:
                         self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8'))
@@ -182,7 +180,7 @@ class OdooDockerInstance(models.Model):
             subprocess.run(["docker", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
             return True
         except Exception as e:
-            self.add_to_log("[ERROR] Docker no está instalado en el sistema.")
+            self.add_to_log("[ERROR] Docker don't installed in the system.")
             self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8') if hasattr(e, 'stderr') else str(e))
             self.write({'state': 'error'})
             return False
@@ -193,7 +191,7 @@ class OdooDockerInstance(models.Model):
             subprocess.run(["docker-compose", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
             return True
         except Exception as e:
-            self.add_to_log("[ERROR] Docker Compose no está instalado en el sistema.")
+            self.add_to_log("[ERROR] Docker Compose don't installed in the system.")
             self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8') if hasattr(e, 'stderr') else str(e))
             self.write({'state': 'error'})
             return False
@@ -202,15 +200,14 @@ class OdooDockerInstance(models.Model):
         # Obtén un puerto disponible
         if self._is_docker_installed() or self._is_docker_compose_installed():
             return False
-        self.add_to_log("[INFO] Iniciando instancia de Odoo")
-        self.add_to_log("[INFO] Obteniendo puerto disponible")
+        self.add_to_log("[INFO] Starting Odoo Instance")
+        self.add_to_log("[INFO] Finding available port")
         http_port = self._get_available_port()
         longpolling_port = self._get_available_port(start_port=http_port + 1)
 
-        self.add_to_log("[INFO] Puerto disponible: " + str(http_port) + " Puerto longpolling: " + str(longpolling_port))
+        self.add_to_log("[INFO] Port available: " + str(http_port) + " and " + str(longpolling_port))
 
         # Actualiza el archivo docker-compose con el puerto
-        print("Actualizando archivo docker-compose")
         self._update_docker_compose_file(http_port, longpolling_port)
         self.http_port = str(http_port)
         self.longpolling_port = str(longpolling_port)
@@ -220,7 +217,7 @@ class OdooDockerInstance(models.Model):
         self._create_odoo_conf()
 
         # Ruta al archivo docker-compose.yml modificado
-        self.add_to_log("[INFO] Ruta al archivo docker-compose.yml modificado")
+        self.add_to_log("[INFO] Path to modified docker-compose.yml file")
         modified_path = get_resource_path('micro_saas', 'data', self.name) + '/docker-compose.yml'
 
         # cargar el archivo docker-compose.yml en el campo binario docker_compose_file
@@ -228,19 +225,19 @@ class OdooDockerInstance(models.Model):
             # Ejecuta el comando de Docker Compose para levantar la instancia
             cmd = f"docker-compose -f {modified_path} up -d"
             result = subprocess.run(cmd, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            self.add_to_log("[INFO] Comando Docker Compose ejecutado exitosamente:")
+            self.add_to_log("[INFO] Docker Compose command executed successfully")
             self.write({'state': 'running'})
         except Exception as e:
             # Maneja cualquier otro error que pueda ocurrir al ejecutar Docker Compose
             # Imprimir el stderr para obtener más detalles
-            self.add_to_log("[ERROR] Error al ejecutar el comando Docker Compose:")
+            self.add_to_log("[ERROR] Error to execute docker-compose command")
             self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8'))
             self.write({'state': 'error'})
 
     def stop_instance(self):
         for instance in self:
             if instance.state == 'running':
-                self.add_to_log("[INFO] Deteniendo instancia de Odoo")
+                self.add_to_log("[INFO] Stopping Odoo Instance")
                 # Ruta al archivo docker-compose.yml modificado
                 modified_path = get_resource_path('micro_saas', 'data', instance.name) + '/docker-compose.yml'
 
@@ -252,12 +249,12 @@ class OdooDockerInstance(models.Model):
                     instance.write({'state': 'stopped'})
                 except Exception as e:
                     # Maneja cualquier error que pueda ocurrir al detener Docker Compose
-                    self.add_to_log(f"[ERROR] Error al detener la instancia de Odoo: {str(e)}")
+                    self.add_to_log(f"[ERROR] Error to stop Odoo Instance: {str(e)}")
 
     def restart_instance(self):
         for instance in self:
             if instance.state == 'running':
-                self.add_to_log("[INFO] Reiniciando instancia de Odoo")
+                self.add_to_log("[INFO] Restarting Odoo Instance")
                 # Ruta al archivo docker-compose.yml modificado
                 modified_path = get_resource_path('micro_saas', 'data', instance.name) + '/docker-compose.yml'
                 try:
@@ -268,14 +265,14 @@ class OdooDockerInstance(models.Model):
                     instance.write({'state': 'running'})
                 except Exception as e:
                     # Maneja cualquier error que pueda ocurrir al detener Docker Compose
-                    self.add_to_log(f"[ERROR] Error al detener la instancia de Odoo: {str(e)}")
+                    self.add_to_log(f"[ERROR] Error to restart Odoo Instance: {str(e)}")
                     self.write({'state': 'stopped'})
 
     def unlink(self):
         # Detener y eliminar los contenedores asociados antes de borrar el registro
         for instance in self:
             if instance.state == 'running':
-                self.add_to_log("[INFO] Eliminando instancia de Odoo")
+                self.add_to_log("[INFO] Removing Odoo Instance")
                 # Ruta al archivo docker-compose.yml modificado
                 modified_path = get_resource_path('micro_saas', 'data', instance.name) + '/docker-compose.yml'
 
