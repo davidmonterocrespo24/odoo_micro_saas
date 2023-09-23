@@ -25,6 +25,8 @@
                             <field name="http_port"/>
                             <field name="longpolling_port"/>
                             <field name="addons_path"/>
+                            <field name="user_path"/>
+                            <field name="instance_data_path"/>
                         </group>
                     </group>
                     <notebook>

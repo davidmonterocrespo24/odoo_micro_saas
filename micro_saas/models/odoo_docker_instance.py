@@ -25,6 +25,15 @@ class OdooDockerInstance(models.Model):
 
     log = fields.Text(string='Log')
     addons_path = fields.Char(string='Addons Path', compute='_compute_addons_path', store=True)
+    user_path = fields.Char(string='User Path', compute='_compute_user_path', store=True)
+    instance_data_path = fields.Char(string='Instance Data Path', compute='_compute_user_path', store=True)
+
+    @api.depends('name')
+    def _compute_user_path(self):
+        for instance in self:
+            #get the user path in the system
+            instance.user_path =os.path.expanduser('~')
+            instance.instance_data_path = os.path.join(instance.user_path, 'odoo_docker', 'data', instance.name)
 
     @api.depends('repository_line')
     def _compute_addons_path(self):
@@ -102,12 +111,10 @@ class OdooDockerInstance(models.Model):
             self.add_to_log("[ERROR] No se encontró el archivo docker-compose-template.yml")
 
         # Ruta donde se guardará el archivo docker-compose.yml modificado
-        instance_data_path = get_resource_path('micro_saas', 'data')
-        instance_data_path = os.path.join(instance_data_path, self.name)
-        if not os.path.exists(instance_data_path):
-            _logger.info("Creating directory %s", instance_data_path)
-            self._makedirs(instance_data_path)
-        modified_path = os.path.join(instance_data_path, 'docker-compose.yml')
+        if not os.path.exists(self.instance_data_path):
+            _logger.info("Creating directory %s", self.instance_data_path)
+            self._makedirs(self.instance_data_path)
+        modified_path = os.path.join(self.instance_data_path, 'docker-compose.yml')
 
         # Lee el archivo de plantilla
         with open(template_path, "r") as template_file:
@@ -116,7 +123,7 @@ class OdooDockerInstance(models.Model):
         # Reemplaza las variables en el archivo de plantilla
         modified_content = template_content.replace("{{HTTP-PORT}}", str(http_port)).replace("{{LONGPOLLING-PORT}}",
                                                                                              str(longpolling_port)).replace(
-            "{{INSTANCE-NAME}}", self.name).replace("{{INSTANCE-DIR}}", instance_data_path)
+            "{{INSTANCE-NAME}}", self.name).replace("{{INSTANCE-DIR}}", self.instance_data_path)
 
         # Guarda el archivo docker-compose.yml modificado
         with open(modified_path, "w") as modified_file:
@@ -132,16 +139,8 @@ class OdooDockerInstance(models.Model):
         try:
             os.makedirs(path)
         except Exception as e:
-            error= str(e)
-            try:
-                #obtener el usuario con que se ejecuta odoo
-                #intentar darle permisos de escritura y lectura al directorio
-                os.chmod(path, 0o777)
-                os.chown(path, 1000, 1000)
-                os.makedirs(path)
-            except Exception as e:
                 raise UserError(
-                        f"Error while creating directory {path} : {str(error)}")
+                        f"Error while creating directory {path} : {str(e)}")
 
     def _clone_repositories(self):
         for instance in self:
