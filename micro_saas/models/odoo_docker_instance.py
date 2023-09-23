@@ -139,7 +139,7 @@ class OdooDockerInstance(models.Model):
             except Exception as e:
                  _logger.info("Error while creating directory %s: %s", path, str(e) if hasattr(e, 'stderr') else e)
             raise UserError(
-                f"Error while creating directory {path}: {str(e) if hasattr(e, 'stderr') else e}.Check the user permissions.")
+                f"Error while creating directory {path}: ")
 
     def _clone_repositories(self):
         for instance in self:
