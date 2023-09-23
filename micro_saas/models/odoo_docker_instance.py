@@ -132,7 +132,7 @@ class OdooDockerInstance(models.Model):
         try:
             os.makedirs(path)
         except Exception as e:
-            #intentar darle permisos de escritura
+            error= str(e)
             try:
                 #obtener el usuario con que se ejecuta odoo
                 #intentar darle permisos de escritura y lectura al directorio
@@ -140,9 +140,8 @@ class OdooDockerInstance(models.Model):
                 os.chown(path, 1000, 1000)
                 os.makedirs(path)
             except Exception as e:
-                 _logger.info(f"Error while creating directory {path}: {str(e)}")
-            raise UserError(
-                f"Error while creating directory {path} : {str(e)}")
+                raise UserError(
+                        f"Error while creating directory {path} : {str(error)}")
 
     def _clone_repositories(self):
         for instance in self:
