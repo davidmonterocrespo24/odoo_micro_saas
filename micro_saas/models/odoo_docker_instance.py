@@ -28,12 +28,7 @@ class OdooDockerInstance(models.Model):
         for instance in self:
             addons_path = []
             for line in instance.repository_line:
-                if line.name:
-                    name_repo_url = line.repository_id.name.split('/')[-1]
-                    repo_path = name_repo_url.replace('.git', '').replace('.', '_').replace('-', '_').replace(' ',
-                                                                                                              '_').replace(
-                        '/', '_').replace('\\', '_') + "_branch_" + line.name.replace('.', '_')
-                    addons_path.append("/mnt/extra-addons/" + repo_path)
+                addons_path.append("/mnt/extra-addons/" + self._get_repo_name(line))
             instance.addons_path = ','.join(addons_path)
 
     def add_to_log(self, message):
@@ -107,7 +102,7 @@ class OdooDockerInstance(models.Model):
         instance_data_path = get_resource_path('micro_saas', 'data')
         instance_data_path = os.path.join(instance_data_path, self.name)
         if not os.path.exists(instance_data_path):
-            os.makedirs(instance_data_path)
+            self._makedirs(instance_data_path)
         modified_path = os.path.join(instance_data_path, 'docker-compose.yml')
 
         # Lee el archivo de plantilla
@@ -123,20 +118,28 @@ class OdooDockerInstance(models.Model):
         with open(modified_path, "w") as modified_file:
             modified_file.write(modified_content)
 
-    def _get_repo_path(self, repository_name, instance):
-        intance_path = os.path.join(get_resource_path('micro_saas', 'data'), instance.name)
-        name_repo_url = repository_name.repository_id.name.split('/')[-1]
+    def _get_repo_name(self, line):
+        name_repo_url = line.repository_id.name.split('/')[-1]
         name = name_repo_url.replace('.git', '').replace('.', '_').replace('-', '_').replace(' ', '_').replace(
-            '/', '_').replace('\\', '_') + "_branch_" + repository_name.name.replace('.', '_')
-        repo_path = os.path.join(intance_path, "addons", name)
-        return repo_path
+            '/', '_').replace('\\', '_') + "_branch_" + line.name.replace('.', '_')
+        return name
+
+    def _makedirs(self, path):
+        try:
+            os.makedirs(path)
+        except Exception as e:
+            self.add_to_log(
+                "[ERROR] No se pudo crear la carpeta de datos de la instancia. Verifique los permisos.")
+            self.add_to_log("[ERROR]  " + str(e))
 
     def _clone_repositories(self):
         for instance in self:
             for line in instance.repository_line:
-                repo_path = self._get_repo_path(line, instance)
+                intance_path = os.path.join(get_resource_path('micro_saas', 'data'), instance.name)
+                name = self._get_repo_name(line, instance)
+                repo_path = os.path.join(intance_path, "addons", name)
                 if not os.path.exists(repo_path):
-                    os.makedirs(repo_path)
+                    self._makedirs(repo_path)
                 try:
                     cmd = f"git clone {line.repository_id.name} -b {line.name} {repo_path}"
                     subprocess.run(cmd, shell=True, check=True)
@@ -155,7 +158,7 @@ class OdooDockerInstance(models.Model):
         for instance in self:
             odoo_conf_path = os.path.join(get_resource_path('micro_saas', 'data', instance.name), "etc", 'odoo.conf')
             if not os.path.exists(os.path.dirname(odoo_conf_path)):
-                os.makedirs(os.path.dirname(odoo_conf_path))
+                self._makedirs(os.path.dirname(odoo_conf_path))
             addons_path = instance.addons_path
             try:
                 with open(odoo_conf_path, 'w') as odoo_conf_file:
