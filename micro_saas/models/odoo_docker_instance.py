@@ -2,7 +2,10 @@ import os
 import socket
 import subprocess
 from datetime import datetime
+from odoo.exceptions import UserError
+import logging
 
+_logger = logging.getLogger(__name__)
 from odoo import models, fields, api
 from odoo.modules.module import get_resource_path
 
@@ -102,6 +105,7 @@ class OdooDockerInstance(models.Model):
         instance_data_path = get_resource_path('micro_saas', 'data')
         instance_data_path = os.path.join(instance_data_path, self.name)
         if not os.path.exists(instance_data_path):
+            _logger.info("Creating directory %s", instance_data_path)
             self._makedirs(instance_data_path)
         modified_path = os.path.join(instance_data_path, 'docker-compose.yml')
 
@@ -128,7 +132,8 @@ class OdooDockerInstance(models.Model):
         try:
             os.makedirs(path)
         except Exception as e:
-            raise Exception(f"Error while creating directory {path}: {str(e) if hasattr(e, 'stderr') else e}.Check the user permissions.")
+            raise UserError(
+                f"Error while creating directory {path}: {str(e) if hasattr(e, 'stderr') else e}.Check the user permissions.")
 
     def _clone_repositories(self):
         for instance in self:
