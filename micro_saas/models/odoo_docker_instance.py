@@ -12,7 +12,7 @@ class OdooDockerInstance(models.Model):
     _description = 'Odoo Docker Instance'
 
     name = fields.Char(string='Instance Name', required=True)
-    state = fields.Selection([('draft', 'Draft'), ('stopped', 'Stopped'), ('running', 'Running'), ('cancel', 'Cancel')],
+    state = fields.Selection([('draft', 'Draft'), ('stopped', 'Stopped'), ('running', 'Running'), ('error', 'Error')],
                              string='State', default='draft')
     http_port = fields.Char(string='HTTP Port')
     longpolling_port = fields.Char(string='Longpolling Port')
@@ -169,14 +169,37 @@ class OdooDockerInstance(models.Model):
                 self.add_to_log(f"[INFO] Archivo odoo.conf creado exitosamente en {odoo_conf_path}")
             except Exception as e:
                 self.add_to_log(f"[ERROR] Error al crear el archivo odoo.conf en {odoo_conf_path}")
+                self.write({'state': 'error'})
                 if hasattr(e, 'stderr') and e.stderr:
                     self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8'))
                 else:
                     self.add_to_log("[ERROR]  " + str(e))
                 self.write({'state': 'stopped'})
 
+    @api.model
+    def _is_docker_installed(self):
+        try:
+            subprocess.run(["docker", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+            return True
+        except subprocess.CalledProcessError:
+            self.add_to_log("[ERROR] Docker no está instalado en el sistema.")
+            self.write({'state': 'error'})
+            return False
+
+    @api.model
+    def _is_docker_compose_installed(self):
+        try:
+            subprocess.run(["docker-compose", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+            return True
+        except subprocess.CalledProcessError:
+            self.add_to_log("[ERROR] Docker Compose no está instalado en el sistema.")
+            self.write({'state': 'error'})
+            return False
+
     def start_instance(self):
         # Obtén un puerto disponible
+        if self._is_docker_installed() or self._is_docker_compose_installed():
+            return False
         self.add_to_log("[INFO] Iniciando instancia de Odoo")
         self.add_to_log("[INFO] Obteniendo puerto disponible")
         http_port = self._get_available_port()
@@ -210,7 +233,7 @@ class OdooDockerInstance(models.Model):
             # Imprimir el stderr para obtener más detalles
             self.add_to_log("[ERROR] Error al ejecutar el comando Docker Compose:")
             self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8'))
-            self.write({'state': 'stopped'})
+            self.write({'state': 'error'})
 
     def stop_instance(self):
         for instance in self:
@@ -279,6 +302,3 @@ class OdooDockerInstance(models.Model):
 
         # Luego, elimina el registro del modelo
         return super(OdooDockerInstance, self).unlink()
-
-    def cancel_instance(self):
-        self.write({'state': 'cancel'})

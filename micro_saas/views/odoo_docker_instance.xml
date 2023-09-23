@@ -13,8 +13,6 @@
                             class="o_button_icon o_icon_stop"/>
                     <button string="Restart Instance" type="object" name="restart_instance" states="running"
                             class="o_button_icon o_icon_refresh"/>
-                    <button string="Cancel Instance" type="object" name="cancel_instance" states="draft"
-                            class="o_button_icon o_icon_cancel"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -62,7 +60,7 @@
                         <div class="oe_kanban_global_click">
                             <div class="o_kanban_record_bottom">
                                 <div class="oe_kanban_bottom_right">
-                                    <span t-attf-class="badge #{['draft', 'cancel'].indexOf(record.state.raw_value) > -1 ? 'badge-secondary' : ['stopped'].indexOf(record.state.raw_value) > -1 ? 'badge-danger' : ['running'].indexOf(record.state.raw_value) > -1 ? 'badge-success' : ''}">
+                                    <span t-attf-class="badge #{['draft', 'error'].indexOf(record.state.raw_value) > -1 ? 'badge-secondary' : ['stopped'].indexOf(record.state.raw_value) > -1 ? 'badge-danger' : ['running'].indexOf(record.state.raw_value) > -1 ? 'badge-success' : ''}">
                                         <field name="state"/>
                                     </span>
                                 </div>
