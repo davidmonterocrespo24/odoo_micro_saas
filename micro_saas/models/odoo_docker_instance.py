@@ -137,7 +137,7 @@ class OdooDockerInstance(models.Model):
                 subprocess.run(["sudo", "chmod", "-R", "777", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
                 os.makedirs(path)
             except Exception as e:
-                 _logger.info("Error while creating directory %s: %s", path, str(e) if hasattr(e, 'stderr') else e)
+                 _logger.info(f"Error while creating directory {path}: ")
             raise UserError(
                 f"Error while creating directory {path}: ")
 
