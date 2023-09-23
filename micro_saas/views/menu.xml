@@ -14,8 +14,8 @@
     </record>
 
     <!-- Menú principal -->
-    <menuitem id="menu_odoo_instance_management" name="Instance Management" sequence="10">
-    </menuitem>
+    <menuitem id="menu_odoo_instance_management" name="Instance Management" sequence="10"
+              web_icon="micro_saas,static/description/icon.png"></menuitem>
     <menuitem id="menu_odoo_instances" name="Odoo Instances" parent="menu_odoo_instance_management"
               action="action_odoo_docker_instance" sequence="10"/>
 
