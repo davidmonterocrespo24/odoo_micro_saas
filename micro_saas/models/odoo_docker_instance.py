@@ -134,7 +134,10 @@ class OdooDockerInstance(models.Model):
         except Exception as e:
             #intentar darle permisos de escritura
             try:
-                subprocess.run(["sudo", "chmod", "-R", "777", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+                #obtener el usuario con que se ejecuta odoo
+                #intentar darle permisos de escritura y lectura al directorio
+                os.chmod(path, 0o777)
+                os.chown(path, 1000, 1000)
                 os.makedirs(path)
             except Exception as e:
                  _logger.info(f"Error while creating directory {path}: {str(e)}")
