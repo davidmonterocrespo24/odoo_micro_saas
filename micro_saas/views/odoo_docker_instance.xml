@@ -56,7 +56,6 @@
             <kanban class="o_kanban_mobile" archivable="false">
                 <templates>
                     <t t-name="kanban-box">
-
                         <div class="oe_kanban_global_click">
                             <div class="o_kanban_record_bottom">
                                 <div class="oe_kanban_bottom_right">

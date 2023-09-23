@@ -258,7 +258,6 @@ class OdooDockerInstance(models.Model):
                 self.add_to_log("[INFO] Reiniciando instancia de Odoo")
                 # Ruta al archivo docker-compose.yml modificado
                 modified_path = get_resource_path('micro_saas', 'data', instance.name) + '/docker-compose.yml'
-
                 try:
                     # Ejecuta el comando de Docker Compose para detener la instancia
                     cmd = f"docker-compose -f {modified_path} restart"
