@@ -16,6 +16,7 @@
         "security/ir.model.access.csv",
         "views/odoo_docker_instance.xml",
         "views/repository_repo.xml",
+        "views/docker_compose_template.xml",
     ],
     "images": ["static/icon.png"],
     "demo": [],
