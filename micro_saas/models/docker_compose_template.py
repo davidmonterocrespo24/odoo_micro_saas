@@ -21,6 +21,10 @@ class DockerComposeTemplate(models.Model):
     sequence = fields.Integer(required=True, default=0)
     active = fields.Boolean(default=True)
     error_msg = fields.Char(string="Error Message")
+    model_id = fields.Many2one(comodel_name='ir.model', string='Applies to', ondelete='cascade',
+                               default=lambda self: self.env.ref('micro_saas.model_odoo_docker_instance'),
+                               help="Model on which the Server action for sending WhatsApp will be created.",
+                               required=True, tracking=True)
     model = fields.Char(
         string='Related Document Model', related='model_id.model',
         index=True, precompute=True, store=True, readonly=True)
