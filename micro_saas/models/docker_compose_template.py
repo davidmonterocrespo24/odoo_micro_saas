@@ -34,7 +34,7 @@ class DockerComposeTemplate(models.Model):
                                    precompute=True, readonly=False)
 
 
-    @api.depends('header_type', 'header_text', 'body')
+    @api.depends('body')
     def _compute_variable_ids(self):
         """compute template variable according to header text, body and buttons"""
         for tmpl in self:
