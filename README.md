@@ -1,5 +1,5 @@
 # Micro SaaS - Odoo Docker Instance Management
-
+<img src="https://raw.githubusercontent.com/davidmonterocrespo24/odoo_micro_saas/15.0/micro_saas/static/description/0.jpg" alt="Imagen 1" width="800"/>
 ## Description
 
 The **Micro SaaS - Odoo Docker Instance Management** module is a powerful and flexible solution for efficiently deploying multiple Odoo instances within Docker containers. Designed for businesses requiring an agile development and testing environment, along with the ability to manage several Odoo instances, this module simplifies development environment management and enhances collaboration in software projects.
@@ -20,6 +20,15 @@ The **Micro SaaS - Odoo Docker Instance Management** module is a powerful and fl
 - **Complete Control:** Centrally manage and monitor your Odoo instances, maintaining a comprehensive record of activities.
 - **Flexibility:** Easily adapt instances to individual project needs by customizing configuration files.
 - **Scalability:** Scale vertically by adding new instances as needed, without complications or disruptions to existing projects.
+
+
+
+# TODO List
+- [ ] Enhance the output of log messages for better readability and information.
+- [ ] Move the functions for executing version control commands to a `/lib/git_utils.py` file for better code organization.
+- [ ] Change the `branch` field of the `repository.repo` model to a new model as per project requirements.
+- [ ] Implement enhancements to the `repository` model to enable operations such as clone, push, and pull on repositories.
+- [ ] Create a scheduled task (cron) to automatically pull all repositories and rebuild instances with the latest changes. Ensure this task runs at desired intervals.
 
 ## Installation Guide
 
@@ -60,12 +69,12 @@ Your support can help us create more features, improve stability, and make it ev
 Thank you for your support!
 
 <!-- Imagen 1 -->
-<img src="https://raw.githubusercontent.com/davidmonterocrespo24/odoo_micro_saas/15.0/micro_saas/static/description/1.jpg" alt="Imagen 1" width="300"/>
+<img src="https://raw.githubusercontent.com/davidmonterocrespo24/odoo_micro_saas/15.0/micro_saas/static/description/1.jpg" alt="Imagen 1" width="800"/>
 
 <!-- Imagen 2 -->
-<img src="https://raw.githubusercontent.com/davidmonterocrespo24/odoo_micro_saas/15.0/micro_saas/static/description/2.jpg" alt="Imagen 2" width="300"/>
+<img src="https://raw.githubusercontent.com/davidmonterocrespo24/odoo_micro_saas/15.0/micro_saas/static/description/2.jpg" alt="Imagen 2" width="800"/>
 
 <!-- Imagen 3 -->
-<img src="https://raw.githubusercontent.com/davidmonterocrespo24/odoo_micro_saas/15.0/micro_saas/static/description/3.jpg" alt="Imagen 3" width="300"/>
+<img src="https://raw.githubusercontent.com/davidmonterocrespo24/odoo_micro_saas/15.0/micro_saas/static/description/3.jpg" alt="Imagen 3" width="800"/>
 
 

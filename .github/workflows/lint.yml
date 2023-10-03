@@ -1,0 +1,50 @@
+name: Linting
+
+on: [ push ]
+
+
+jobs:
+  flake8:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - run: pip install flake8
+      - name: Lint with flake8
+        if: github.event_name == 'push'
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 \
+          --select=C,E,F,W,B,B950 \
+          --ignore=E203,E501,W503,W504,E266,E126,E125,F401,E501,E501,C901,F841,W291,E131,W293,F811,E265 \
+          --per-file-ignores='**/init.py:F401' \
+          --exclude=__unported__,__init__.py,examples \
+          --show-source --statistics --count --max-line-length=120 .
+      - uses: grantmcconnaughey/lintly-flake8-github-action@v1.0
+        if: github.event_name == 'pull_request'
+        with:
+          # The GitHub API token to create reviews with
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Fail if "new" violations detected or "any", default "new"
+          failIf: new
+          # Additional arguments to pass to flake8, default "." (current directory)
+          args: |
+            --select=C,E,F,W,B,B950 \
+            --ignore=E203,E501,W503,W504,E266,E126,E125,F401,E501,E501,C901,F841,W291,E131,W293,F811,E265 \
+            --per-file-ignores='**/init.py:F401' \
+            --exclude=__unported__,__init__.py,examples \
+            --show-source --statistics --max-line-length=120 .
+  pylint:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v2
+      - run: curl https://raw.githubusercontent.com/iterativo-git/dockerdoo/12.0/.devcontainer/.vscode/oca_pylint.cfg -o oca_pylint.cfg
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - run: pip install pylint_odoo
+      - run: |
+          pylint **/*.py --exit-zero --rcfile oca_pylint.cfg --load-plugins pylint_odoo
