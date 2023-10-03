@@ -23,7 +23,7 @@ class OdooDockerInstance(models.Model):
     instance_url = fields.Char(string='Instance URL', compute='_compute_instance_url', store=True)
     repository_line = fields.One2many('repository.repo.line', 'instance_id', string='Repository and Branch')
 
-    log = fields.Text(string='Log')
+    log = fields.Html(string='Log')
     addons_path = fields.Char(string='Addons Path', compute='_compute_addons_path', store=True)
     user_path = fields.Char(string='User Path', compute='_compute_user_path', store=True)
     instance_data_path = fields.Char(string='Instance Data Path', compute='_compute_user_path', store=True)
@@ -49,10 +49,10 @@ class OdooDockerInstance(models.Model):
     def add_to_log(self, message):
         """Agrega un mensaje al registro (log) y lo limpia si supera 1000 caracteres."""
         now = datetime.now()
-        new_log = "</br>\n#" + str(now.strftime("%m/%d/%Y, %H:%M:%S")) + " " + str(message) + " " + str(self.log)
+        new_log = "</br> \n#" + str(now.strftime("%m/%d/%Y, %H:%M:%S")) + " " + str(message) + " " + str(self.log)
         if len(new_log) > 1000:
             # Si el registro supera los 1000 caracteres, límpialo
-            new_log = "</br>\n#" + str(now.strftime("%m/%d/%Y, %H:%M:%S")) + " " + str(message)
+            new_log = "</br> \n#" + str(now.strftime("%m/%d/%Y, %H:%M:%S")) + " " + str(message)
         self.log = new_log
 
     @api.depends('http_port')
