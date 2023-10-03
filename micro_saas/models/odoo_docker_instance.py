@@ -52,7 +52,7 @@ class OdooDockerInstance(models.Model):
         new_log = "</br> \n#" + str(now.strftime("%m/%d/%Y, %H:%M:%S")) + " " + str(message) + " " + str(self.log)
         if len(new_log) > 1000:
             # Si el registro supera los 1000 caracteres, límpialo
-            new_log = "</br> \n#" + str(now.strftime("%m/%d/%Y, %H:%M:%S")) + " " + str(message)
+            new_log = "</br>" + str(now.strftime("%m/%d/%Y, %H:%M:%S")) + " " + str(message)
         self.log = new_log
 
     @api.depends('http_port')
