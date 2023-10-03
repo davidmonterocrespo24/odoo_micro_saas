@@ -25,6 +25,7 @@
                             <field name="active"/>
                             <field name="error_msg"/>
                             <field name="model"/>
+                            <field name="model_id"/>
                         </group>
                         <notebook>
                             <page id="body" name="Body">
@@ -40,7 +41,7 @@
                                         <field name="field_type"/>
                                         <field name="field_name"
                                                widget="DynamicModelFieldSelectorChar"
-                                               
+
                                                options="{'model': 'model'}"/>
                                         <field name="model" invisible="1"/>
                                         <field name="line_type" invisible="1" force_save="1"/>
