@@ -31,13 +31,16 @@ class OdooDockerInstance(models.Model):
     @api.depends('name')
     def _compute_user_path(self):
         for instance in self:
-            #get the user path in the system
+            if not instance.name:
+                continue
             instance.user_path =os.path.expanduser('~')
             instance.instance_data_path = os.path.join(instance.user_path, 'odoo_docker', 'data', instance.name)
 
     @api.depends('repository_line')
     def _compute_addons_path(self):
         for instance in self:
+            if not instance.repository_line:
+                continue
             addons_path = []
             for line in instance.repository_line:
                 addons_path.append("/mnt/extra-addons/" + self._get_repo_name(line))
@@ -60,6 +63,8 @@ class OdooDockerInstance(models.Model):
         base_url = base_url[0] + ':' + base_url[1] + ':'
 
         for instance in self:
+            if not instance.http_port:
+                continue
             instance_url = f"{base_url}{instance.http_port}"
             instance.instance_url = instance_url
 
