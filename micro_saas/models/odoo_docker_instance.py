@@ -135,7 +135,7 @@ class OdooDockerInstance(models.Model):
             modified_file.write(modified_content)
 
     def _get_repo_name(self, line):
-        if not line.repository_id:
+        if not line.repository_id or not line.name or not line.repository_id.name:
             return ''
         name_repo_url = line.repository_id.name.split('/')[-1]
         name = name_repo_url.replace('.git', '').replace('.', '_').replace('-', '_').replace(' ', '_').replace(
