@@ -13,17 +13,20 @@
         <field name="view_mode">tree</field>
     </record>
 
+    <record id="action_docker_compose_template_form" model="ir.actions.act_window">
+        <field name="name">Docker Compose Template</field>
+        <field name="res_model">docker.compose.template</field>
+        <field name="view_mode">tree,form</field>
+    </record>
     <!-- Menú principal -->
     <menuitem id="menu_odoo_instance_management" name="Instance Management" sequence="10"
               web_icon="micro_saas,static/description/icon.png"></menuitem>
     <menuitem id="menu_odoo_instances" name="Odoo Instances" parent="menu_odoo_instance_management"
               action="action_odoo_docker_instance" sequence="10"/>
-
-
     <!-- Menú para acceder a la vista de formulario -->
     <menuitem id="menu_repository_repo" name="Repository Repos" parent="menu_odoo_instance_management" sequence="10"/>
     <menuitem id="menu_repository_repo_form" name="Repository " parent="menu_repository_repo"
               action="action_repository_repo_form" sequence="10"/>
-
-
+    <menuitem id="menu_template" name="Template" parent="menu_odoo_instances" sequence="10"
+              action="action_docker_compose_template_form"/>
 </odoo>
