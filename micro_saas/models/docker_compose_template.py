@@ -39,12 +39,12 @@ class DockerComposeTemplate(models.Model):
 
             body_variables = set(re.findall(r'{{[1-9][0-9]*}}', tmpl.body or ''))
             # body
-            existing_body_variables = tmpl.variable_ids.filtered(lambda line: line.line_type == 'body')
+            existing_body_variables = tmpl.variable_ids
             existing_body_variables = {var.name: var for var in existing_body_variables}
             new_body_variable_names = [var_name for var_name in body_variables if var_name not in existing_body_variables]
             deleted_body_variables = [var.id for name, var in existing_body_variables.items() if name not in body_variables]
 
-            to_create += [{'name': var_name, 'line_type': 'body', 'dc_template_id': tmpl.id} for var_name in set(new_body_variable_names)]
+            to_create += [{'name': var_name, 'dc_template_id': tmpl.id} for var_name in set(new_body_variable_names)]
             to_delete += deleted_body_variables
 
             update_commands = [Command.delete(to_delete_id) for to_delete_id in to_delete] + [Command.create(vals) for vals in to_create]
@@ -79,9 +79,9 @@ class DockerComposeTemplate(models.Model):
         self.ensure_one()
         variable_values = variable_values or {}
         body = self.body
-        for var in self.variable_ids.filtered(lambda var: var.line_type == 'body'):
+        for var in self.variable_ids:
             fallback_value = var.demo_value if demo_fallback else ' '
-            body = body.replace(var.name, variable_values.get(f'{var.line_type}-{var.name}', fallback_value))
+            body = body.replace(var.name, variable_values.get(var.name, fallback_value))
         return body
 
 
@@ -90,10 +90,7 @@ class DockerComposeTemplateVariable(models.Model):
     _description = 'Docker Compose Template Variable'
 
     name = fields.Char(string="Placeholder", required=True)
-
     dc_template_id = fields.Many2one(comodel_name='docker.compose.template', required=True, ondelete='cascade')
-    line_type = fields.Selection([
-        ('body', 'Body')], string="Variable location", required=True)
     field_type = fields.Selection([
         ('free_text', 'Free Text'),
         ('field', 'Field of Model')], string="Type", default='free_text', required=True)
@@ -103,7 +100,7 @@ class DockerComposeTemplateVariable(models.Model):
     _sql_constraints = [
         (
             'name_type_template_unique',
-            'UNIQUE(name, line_type, dc_template_id)',
+            'UNIQUE(name,dc_template_id)',
             'Variable names must be unique for a given template'
         ),
     ]
@@ -130,13 +127,8 @@ class DockerComposeTemplateVariable(models.Model):
                 raise ValidationError(_("Invalid field name: %r", variable.field_name))
 
 
-    @api.depends('line_type', 'name')
-    def _compute_display_name(self):
-        for variable in self:
-            if variable.line_type == 'body':
-                variable.display_name = f'{variable.line_type} - {variable.name}'
-            else:
-                variable.display_name = variable.line_type
+
+
 
     @api.onchange('model')
     def _onchange_model_id(self):
@@ -151,7 +143,7 @@ class DockerComposeTemplateVariable(models.Model):
                 value = variable.demo_value
 
             value_str = value and str(value) or ''
-            value_by_name[f"{variable.line_type}-{variable.name}"] = value_str
+            value_by_name[variable.name] = value_str
 
         return value_by_name
 

@@ -36,7 +36,6 @@
                                         <field name="display_name" string="Name"/>
                                         <field name="demo_value" required="1"/>
                                         <field name="field_type"/>
-                                        <field name="line_type" invisible="1" force_save="1"/>
                                         <field name="name" invisible="1" force_save="1"/>
                                     </tree>
                                 </field>
@@ -57,7 +56,6 @@
                 <tree>
                     <field name="name"/>
                     <field name="dc_template_id"/>
-                    <field name="line_type"/>
                     <field name="field_type"/>
                     <field name="demo_value"/>
                 </tree>
@@ -75,7 +73,6 @@
                                 <field name="dc_template_id"/>
                             </group>
                             <group>
-                                <field name="line_type"/>
                                 <field name="field_type"/>
                                 <field name="demo_value"/>
                             </group>
