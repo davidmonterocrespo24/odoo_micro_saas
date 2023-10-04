@@ -31,17 +31,15 @@ class OdooDockerInstance(models.Model):
     instance_data_path = fields.Char(string='Instance Data Path', compute='_compute_user_path', store=True)
     template_id = fields.Many2one('docker.compose.template', string='Template')
 
-    @api.depends('template_id')
+    @api.onchange('template_id')
     def onchange_template_id(self):
         if self.template_id:
-            _logger.info("Value Template ID: %s", self.template_id)
             self.template_dc_body = self.template_id.template_dc_body
             self.tag_ids = self.template_id.tag_ids
             self.repository_line = self.template_id.repository_line
             self._compute_variable_ids()
             self.result_dc_body = self._get_formatted_body(demo_fallback=True)
-        else:
-            _logger.info("Else Template ID: %s", self.template_id)
+
 
     @api.depends('name')
     def _compute_user_path(self):
