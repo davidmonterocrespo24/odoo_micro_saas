@@ -9,7 +9,7 @@
                 <tree>
                     <field name="sequence" widget="handle"/>
                     <field name="name"/>
-                    <field name="tag_ids" widget="many2many_tags"/>
+                    <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                     <field name="active"/>
                 </tree>
             </field>
@@ -26,7 +26,7 @@
                             <field name="active"/>
                         </group>
                         <group>
-                            <field name="tag_ids" widget="many2many_tags"/>
+                            <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                         </group>
                         <notebook>
                             <page id="body" name="Body">
