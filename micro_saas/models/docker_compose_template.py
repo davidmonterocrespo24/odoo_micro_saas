@@ -104,13 +104,13 @@ class DockerComposeTemplateVariable(models.Model):
     _description = 'Docker Compose Template Variable'
 
     name = fields.Char(string="Placeholder", required=True)
-    dc_template_id = fields.Many2one(comodel_name='docker.compose.template', required=True, ondelete='cascade')
+    dc_template_id = fields.Many2one(comodel_name='docker.compose.template', ondelete='cascade')
     field_type = fields.Selection([
         ('free_text', 'Free Text'),
         ('field', 'Field of Model')], string="Type", default='free_text', required=True)
     field_name = fields.Char(string="Field")
     demo_value = fields.Char(string="Sample Value", default="Sample Value", required=True)
-    instance_id = fields.Many2one('odoo.docker.instance', string='Instance')
+    instance_id = fields.Many2one('odoo.docker.instance', string='Instance', ondelete='cascade')
     _sql_constraints = [
         (
             'name_type_template_unique',
