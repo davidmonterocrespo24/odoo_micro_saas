@@ -20,10 +20,11 @@
                         <group>
                             <field name="name"/>
                             <field name="instance_url" readonly="1" widget="url"/>
-                        </group>
-                        <group>
                             <field name="http_port"/>
                             <field name="longpolling_port"/>
+                        </group>
+                        <group>
+                            <field name="template_id"/>
                             <field name="addons_path"/>
                             <field name="user_path"/>
                             <field name="instance_data_path"/>
