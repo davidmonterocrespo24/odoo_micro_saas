@@ -1,9 +1,10 @@
+import logging
 import os
 import socket
 import subprocess
 from datetime import datetime
+
 from odoo.exceptions import UserError
-import logging
 
 _logger = logging.getLogger(__name__)
 from odoo import models, fields, api
@@ -18,8 +19,8 @@ class OdooDockerInstance(models.Model):
     name = fields.Char(string='Instance Name', required=True)
     state = fields.Selection([('draft', 'Draft'), ('stopped', 'Stopped'), ('running', 'Running'), ('error', 'Error')],
                              string='State', default='draft')
-    http_port = fields.Char(string='HTTP Port' , required=True)
-    longpolling_port = fields.Char(string='Longpolling Port' , required=True)
+    http_port = fields.Char(string='HTTP Port', required=True)
+    longpolling_port = fields.Char(string='Longpolling Port', required=True)
 
     instance_url = fields.Char(string='Instance URL', compute='_compute_instance_url', store=True)
     repository_line = fields.One2many('repository.repo.line', 'instance_id', string='Repository and Branch')
@@ -30,20 +31,17 @@ class OdooDockerInstance(models.Model):
     instance_data_path = fields.Char(string='Instance Data Path', compute='_compute_user_path', store=True)
     template_id = fields.Many2one('docker.compose.template', string='Template')
 
-
-
     @api.depends('template_id')
     def onchange_template_id(self):
-        for instance in self:
-            if instance.template_id:
-                _logger.info("Value Template ID: %s", instance.template_id)
-                instance.template_dc_body = instance.template_id.template_dc_body
-                instance.tag_ids = instance.template_id.tag_ids
-                instance.repository_line = instance.template_id.repository_line
-                self._compute_variable_ids()
-                instance.result_dc_body = self._get_formatted_body(demo_fallback=True)
-            else:
-                _logger.info("Template ID: %s", instance.template_id)
+        if self.template_id:
+            _logger.info("Value Template ID: %s", self.template_id)
+            self.template_dc_body = self.template_id.template_dc_body
+            self.tag_ids = self.template_id.tag_ids
+            self.repository_line = self.template_id.repository_line
+            self._compute_variable_ids()
+            self.result_dc_body = self._get_formatted_body(demo_fallback=True)
+        else:
+            _logger.info("Template ID: %s", self.template_id)
 
     @api.depends('name')
     def _compute_user_path(self):
