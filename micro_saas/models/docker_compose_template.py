@@ -20,30 +20,22 @@ class DockerComposeTemplate(models.Model):
     name = fields.Char(string="Name", required=True)
     sequence = fields.Integer(required=True, default=0)
     active = fields.Boolean(default=True)
-    error_msg = fields.Char(string="Error Message")
-    body = fields.Text(string="Template body", tracking=True)
     variable_ids = fields.One2many('docker.compose.template.variable', 'dc_template_id',
                                    string="Template Variables", store=True, compute='_compute_variable_ids',
                                    precompute=True, readonly=False)
 
-    demo_body = fields.Text(string="Demo Body", compute='_compute_demo_body', store=True)
+    result_dc_body = fields.Text(string="Result Docker Compose", compute='_compute_result_dc_body', store=True)
     tag_ids = fields.Many2many('docker.compose.tag', string="Tags", tracking=True)
-    body = fields.Text(string="Template body")
+    template_dc_body = fields.Text(string="Template Docker Compose")
     repository_line = fields.One2many('repository.repo.line', 'instance_id', string='Repository and Branch')
 
-    @api.depends('body')
+    @api.depends('template_dc_body')
     def _compute_variable_ids(self):
         """compute template variable according to header text, body and buttons"""
         for tmpl in self:
             to_delete = []
             to_create = []
-
-            body_variables = set(re.findall(r'{{[^{}]+}}', tmpl.body or ''))
-            _logger.info("body_variables %s", body_variables)
-            _logger.info("tmpl.variable_ids %s", str(re.findall(r'{{[^{}]+}}', tmpl.body or '')))
-            _logger.info("t  %s", str(tmpl.body))
-
-            # body
+            body_variables = set(re.findall(r'{{[^{}]+}}', tmpl.template_dc_body or ''))
             existing_body_variables = tmpl.variable_ids
             existing_body_variables = {var.name: var for var in existing_body_variables}
             new_body_variable_names = [var_name for var_name in body_variables if
@@ -59,10 +51,10 @@ class DockerComposeTemplate(models.Model):
             if update_commands:
                 tmpl.variable_ids = update_commands
 
-    @api.depends('body', 'variable_ids.demo_value')
-    def _compute_demo_body(self):
+    @api.depends('template_dc_body', 'variable_ids.demo_value')
+    def _compute_result_dc_body(self):
         for template in self:
-            template.demo_body = template._get_formatted_body(demo_fallback=True)
+            template.result_dc_body = template._get_formatted_body(demo_fallback=True)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -85,11 +77,11 @@ class DockerComposeTemplate(models.Model):
     def _get_formatted_body(self, demo_fallback=False, variable_values=None):
         self.ensure_one()
         variable_values = variable_values or {}
-        body = self.body
+        template_dc_body = self.template_dc_body
         for var in self.variable_ids:
             fallback_value = var.demo_value if demo_fallback else ' '
-            body = body.replace(var.name, variable_values.get(var.name, fallback_value))
-        return body
+            template_dc_body = template_dc_body.replace(var.name, variable_values.get(var.name, fallback_value))
+        return template_dc_body
 
     def create_instance_from_template(self):
         self.ensure_one()
@@ -102,7 +94,7 @@ class DockerComposeTemplate(models.Model):
             'context': {
                 'default_name': self.name + " from Template",
                 'default_docker_compose_body': self._get_formatted_body(),
-                'default_template_body': self.body,
+                'default_template_body': self.template_dc_body,
                 'default_variable_values': [(6, 0, self.variable_ids.ids)],
                 'default_tag_ids': [(6, 0, self.tag_ids.ids)],
                 'default_repository_line': [(6, 0, self.repository_line.ids)],

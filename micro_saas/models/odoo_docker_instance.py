@@ -12,6 +12,7 @@ from odoo.modules.module import get_resource_path
 
 class OdooDockerInstance(models.Model):
     _name = 'odoo.docker.instance'
+    _inherit = "docker.compose.template"
     _description = 'Odoo Docker Instance'
 
     name = fields.Char(string='Instance Name', required=True)
@@ -27,14 +28,7 @@ class OdooDockerInstance(models.Model):
     addons_path = fields.Char(string='Addons Path', compute='_compute_addons_path', store=True)
     user_path = fields.Char(string='User Path', compute='_compute_user_path', store=True)
     instance_data_path = fields.Char(string='Instance Data Path', compute='_compute_user_path', store=True)
-    tag_ids = fields.Many2many('docker.compose.tag', string="Tags", tracking=True)
 
-    template_body = fields.Text(string="Template body", tracking=True)
-    variable_ids = fields.One2many('docker.compose.template.variable', 'instance_id',
-                                   string="Template Variables", store=True, compute='_compute_variable_ids',
-                                   precompute=True, readonly=False)
-
-    docker_compose_body = fields.Text(string="Docker Compose Content", compute='_compute_docker_compose_body', store=True)
 
     @api.depends('name')
     def _compute_user_path(self):
