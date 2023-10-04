@@ -77,7 +77,7 @@ class DockerComposeTemplate(models.Model):
     def _get_formatted_body(self, demo_fallback=False, variable_values=None):
         self.ensure_one()
         variable_values = variable_values or {}
-        template_dc_body = self.template_dc_body
+        template_dc_body = self.template_dc_body or ''
         for var in self.variable_ids:
             fallback_value = var.demo_value if demo_fallback else ' '
             template_dc_body = template_dc_body.replace(var.name, variable_values.get(var.name, fallback_value))
