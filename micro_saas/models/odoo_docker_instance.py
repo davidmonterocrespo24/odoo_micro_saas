@@ -36,6 +36,7 @@ class OdooDockerInstance(models.Model):
     def onchange_template_id(self):
         for instance in self:
             if instance.template_id:
+                _logger.info("Template ID: %s", instance.template_id)
                 instance.template_dc_body = instance.template_id.template_dc_body
                 instance.tag_ids = instance.template_id.tag_ids
                 instance.repository_line = instance.template_id.repository_line
