@@ -35,13 +35,12 @@ class OdooDockerInstance(models.Model):
     @api.depends('template_id')
     def onchange_template_id(self):
         for instance in self:
-            if not instance.template_id:
-                continue
-            instance.template_dc_body = instance.template_id.template_dc_body
-            instance.tag_ids = instance.template_id.tag_ids
-            instance.repository_line = instance.template_id.repository_line
-            self._compute_variable_ids()
-            instance.result_dc_body = self._get_formatted_body(demo_fallback=True)
+            if instance.template_id:
+                instance.template_dc_body = instance.template_id.template_dc_body
+                instance.tag_ids = instance.template_id.tag_ids
+                instance.repository_line = instance.template_id.repository_line
+                self._compute_variable_ids()
+                instance.result_dc_body = self._get_formatted_body(demo_fallback=True)
 
     @api.depends('name')
     def _compute_user_path(self):
