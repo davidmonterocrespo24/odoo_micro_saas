@@ -33,6 +33,8 @@ class DockerComposeTemplate(models.Model):
                                    string="Template Variables", store=True, compute='_compute_variable_ids',
                                    precompute=True, readonly=False)
 
+    demo_body= fields.Text(string="Demo Body", compute='_compute_demo_body', store=True)
+
 
     @api.depends('body')
     def _compute_variable_ids(self):
@@ -55,6 +57,10 @@ class DockerComposeTemplate(models.Model):
             if update_commands:
                 tmpl.variable_ids = update_commands
 
+    @api.depends('body')
+    def _compute_demo_body(self):
+        for template in self:
+            template.demo_body = template._get_formatted_body(demo_fallback=True)
 
     @api.model_create_multi
     def create(self, vals_list):

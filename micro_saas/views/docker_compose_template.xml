@@ -48,6 +48,7 @@
                                         <field name="name" invisible="1" force_save="1"/>
                                     </tree>
                                 </field>
+                                <field name="demo_body"/>
                             </page>
                         </notebook>
                     </sheet>
