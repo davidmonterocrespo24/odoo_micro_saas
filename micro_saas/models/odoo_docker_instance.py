@@ -30,6 +30,9 @@ class OdooDockerInstance(models.Model):
     user_path = fields.Char(string='User Path', compute='_compute_user_path', store=True)
     instance_data_path = fields.Char(string='Instance Data Path', compute='_compute_user_path', store=True)
     template_id = fields.Many2one('docker.compose.template', string='Template')
+    variable_ids = fields.One2many('docker.compose.template.variable', 'instance_id',
+                                   string="Template Variables", store=True, compute='_compute_variable_ids',
+                                   precompute=True, readonly=False)
 
     @api.onchange('template_id')
     def onchange_template_id(self):
