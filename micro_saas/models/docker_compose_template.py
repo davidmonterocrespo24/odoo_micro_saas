@@ -123,29 +123,26 @@ class DockerComposeTemplateVariable(models.Model):
         ),
     ]
 
-    @api.constrains('field_type', 'demo_value')
-    def _check_demo_values(self):
-        if self.filtered(lambda var: var.field_type == 'free_text' and not var.demo_value):
-            raise ValidationError(_('Free Text template variables must have a demo value.'))
-        if self.filtered(lambda var: var.field_type == 'field' and not var.field_name):
-            raise ValidationError(_("Field template variables must be associated with a field."))
+    # @api.constrains('field_type', 'demo_value')
+    # def _check_demo_values(self):
+    #     if self.filtered(lambda var: var.field_type == 'free_text' and not var.demo_value):
+    #         raise ValidationError(_('Free Text template variables must have a demo value.'))
+    #     if self.filtered(lambda var: var.field_type == 'field' and not var.field_name):
+    #         raise ValidationError(_("Field template variables must be associated with a field."))
+    #
+    # @api.constrains('field_name')
+    # def _check_field_name(self):
+    #     for variable in self:
+    #         if not variable.field_name or self.user_has_groups('base.group_system'):
+    #             continue
+    #
+    #         model = self.env[variable.model]
+    #         if not model.check_access_rights('read', raise_exception=False):
+    #             raise ValidationError(_("You can not select field of %r.", variable.model))
+    #
+    #         if variable.field_name not in model:
+    #             raise ValidationError(_("Invalid field name: %r", variable.field_name))
 
-    @api.constrains('field_name')
-    def _check_field_name(self):
-        for variable in self:
-            if not variable.field_name or self.user_has_groups('base.group_system'):
-                continue
-
-            model = self.env[variable.model]
-            if not model.check_access_rights('read', raise_exception=False):
-                raise ValidationError(_("You can not select field of %r.", variable.model))
-
-            if variable.field_name not in model:
-                raise ValidationError(_("Invalid field name: %r", variable.field_name))
-
-    @api.onchange('model')
-    def _onchange_model_id(self):
-        self.field_name = False
 
     def _get_variables_value(self, record):
         value_by_name = {}
