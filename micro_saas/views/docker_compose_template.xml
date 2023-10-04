@@ -57,7 +57,6 @@
                 <tree>
                     <field name="name"/>
                     <field name="dc_template_id"/>
-                    <field name="model"/>
                     <field name="line_type"/>
                     <field name="field_type"/>
                     <field name="demo_value"/>
@@ -74,7 +73,6 @@
                             <group>
                                 <field name="name"/>
                                 <field name="dc_template_id"/>
-                                <field name="model"/>
                             </group>
                             <group>
                                 <field name="line_type"/>
