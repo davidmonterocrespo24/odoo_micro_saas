@@ -114,7 +114,7 @@ class DockerComposeTemplateVariable(models.Model):
     _sql_constraints = [
         (
             'name_type_template_unique',
-            'UNIQUE(name,dc_template_id)',
+            'UNIQUE(name)',
             'Variable names must be unique for a given template'
         ),
     ]
