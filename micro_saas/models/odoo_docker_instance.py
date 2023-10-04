@@ -37,6 +37,7 @@ class OdooDockerInstance(models.Model):
                 continue
             instance.user_path = os.path.expanduser('~')
             instance.instance_data_path = os.path.join(instance.user_path, 'odoo_docker', 'data', instance.name)
+            instance.result_dc_body = self._get_formatted_body(demo_fallback=True)
 
     @api.depends('repository_line')
     def _compute_addons_path(self):
