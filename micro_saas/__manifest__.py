@@ -24,8 +24,8 @@
     "application": False,
     "auto_install": False,
     'web.assets_backend': [
-        'micro_saas/static/src/js/dynamic_model_field_selector.js',
-        'micro_saas/static/src/js/dynamic_model_field_selector_char.js',
-        'micro_saas/static/src/js/dynamic_model_field_selector_char.xml',
+        'micro_saas/static/src/dynamic_model_field_selector.js',
+        'micro_saas/static/src/dynamic_model_field_selector_char.js',
+        'micro_saas/static/src/dynamic_model_field_selector_char.xml',
     ],
 }
