@@ -39,8 +39,7 @@
                                         <field name="name" invisible="1" force_save="1"/>
                                     </tree>
                                 </field>
-                                <field name="demo_body"  style="auto;color:rgb(255,255,255);  background: black;"
-                                   widget="html" readonly="1"/>
+                                <field name="demo_body"  style="auto;color:rgb(255,255,255);  background: black;"/>
                             </page>
                         </notebook>
                     </sheet>
