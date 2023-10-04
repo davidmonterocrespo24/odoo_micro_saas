@@ -41,7 +41,8 @@
                                         <field name="field_type"/>
                                         <field name="field_name"
                                                widget="DynamicModelFieldSelectorChar"
-
+                                               required="field_type == 'field'" readonly="field_type != 'field'"
+                                               invisible="field_type != 'field'"
                                                options="{'model': 'model'}"/>
                                         <field name="model" invisible="1"/>
                                         <field name="line_type" invisible="1" force_save="1"/>
@@ -57,44 +58,43 @@
         </record>
 
 
-
         <record id="dc_template_variable_view_tree" model="ir.ui.view">
-        <field name="name">docker.compose.template.variable.tree</field>
-        <field name="model">docker.compose.template.variable</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="name"/>
-                <field name="dc_template_id"/>
-                <field name="model"/>
-                <field name="line_type"/>
-                <field name="field_type"/>
-                <field name="field_name"/>
-                <field name="demo_value"/>
-            </tree>
-        </field>
-    </record>
-    <record id="dc_template_variable_view_form" model="ir.ui.view">
-        <field name="name">docker.compose.template.variable.view.form</field>
-        <field name="model">docker.compose.template.variable</field>
-        <field name="arch" type="xml">
-            <form string="Template Button">
-                <sheet>
-                    <group>
+            <field name="name">docker.compose.template.variable.tree</field>
+            <field name="model">docker.compose.template.variable</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="dc_template_id"/>
+                    <field name="model"/>
+                    <field name="line_type"/>
+                    <field name="field_type"/>
+                    <field name="field_name"/>
+                    <field name="demo_value"/>
+                </tree>
+            </field>
+        </record>
+        <record id="dc_template_variable_view_form" model="ir.ui.view">
+            <field name="name">docker.compose.template.variable.view.form</field>
+            <field name="model">docker.compose.template.variable</field>
+            <field name="arch" type="xml">
+                <form string="Template Button">
+                    <sheet>
                         <group>
-                            <field name="name"/>
-                            <field name="dc_template_id"/>
-                            <field name="model"/>
+                            <group>
+                                <field name="name"/>
+                                <field name="dc_template_id"/>
+                                <field name="model"/>
+                            </group>
+                            <group>
+                                <field name="line_type"/>
+                                <field name="field_type"/>
+                                <field name="field_name"/>
+                                <field name="demo_value"/>
+                            </group>
                         </group>
-                        <group>
-                            <field name="line_type"/>
-                            <field name="field_type"/>
-                            <field name="field_name"/>
-                            <field name="demo_value"/>
-                        </group>
-                    </group>
-                </sheet>
-            </form>
-        </field>
-    </record>
+                    </sheet>
+                </form>
+            </field>
+        </record>
     </data>
 </odoo>

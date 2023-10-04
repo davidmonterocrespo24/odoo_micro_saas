@@ -23,4 +23,8 @@
     "installable": True,
     "application": False,
     "auto_install": False,
+    'web.assets_backend': [
+        'micro_saas/static/src/*',
+    ],
+
 }
