@@ -28,7 +28,7 @@
                             <page id="body" name="Body">
                                 <field name="body"
                                        placeholder="Use {{1}}, {{2}} as placeholders for dynamic variable"
-                                />
+                                       widget="ace" options="{'mode': 'yaml'}"/>
                             </page>
                             <page id="variables" name="Variables">
                                 <field name="variable_ids">
