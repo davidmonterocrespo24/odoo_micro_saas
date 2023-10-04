@@ -37,8 +37,16 @@
                                 <field name="result_dc_body"
                                        readonly="1"
                                        widget="ace" options="{'mode': 'xml' ,'theme': 'monokai'}"/>
-                                <br/>
-                                <label for="variable_ids" string="Variables"/>
+                            </page>
+
+                            <page id="variables" name="Variables">
+                                <label for="template_dc_body" string="Body Template"/>
+                                <field name="template_dc_body" widget="ace" options="{'mode': 'xml'}"
+                                       placeholder="Use {{1}}, {{2}} as placeholders for dynamic variable"/>
+                            </page>
+                        </notebook>
+                        <notebook>
+                            <page string="Variables">
                                 <field name="variable_ids">
                                     <tree editable="bottom" create="false" delete="false">
                                         <field name="display_name" string="Name"/>
@@ -47,13 +55,6 @@
                                         <field name="name" invisible="1" force_save="1"/>
                                     </tree>
                                 </field>
-
-                            </page>
-
-                            <page id="variables" name="Variables">
-                                <label for="template_dc_body" string="Body Template"/>
-                                <field name="template_dc_body" widget="ace" options="{'mode': 'xml'}"
-                                       placeholder="Use {{1}}, {{2}} as placeholders for dynamic variable"/>
                             </page>
                         </notebook>
                         <notebook>

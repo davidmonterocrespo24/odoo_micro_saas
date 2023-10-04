@@ -90,7 +90,7 @@ class DockerComposeTemplate(models.Model):
             'type': 'ir.actions.act_window',
             'res_model': 'odoo.docker.instance',
             'view_mode': 'form',
-            'target': 'new',
+            'target': 'current',
             'context': {
                 'default_name': self.name + " from Template",
                 'default_docker_compose_body': self._get_formatted_body(),
