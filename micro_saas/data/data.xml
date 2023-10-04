@@ -7,7 +7,7 @@
             <field name="name">Odoo 13</field>
             <field name="sequence">10</field>
             <field name="active">True</field>
-            <field name="body"><![CDATA[
+            <field name="template_dc_body"><![CDATA[
 version: '2'
 services:
   db:
@@ -67,7 +67,7 @@ services:
             <field name="name">Odoo 14</field>
             <field name="sequence">20</field>
             <field name="active">True</field>
-            <field name="body"><![CDATA[
+            <field name="template_dc_body"><![CDATA[
 version: '2'
 services:
   db:
@@ -127,7 +127,7 @@ services:
             <field name="name">Odoo 15</field>
             <field name="sequence">30</field>
             <field name="active">True</field>
-            <field name="body"><![CDATA[
+            <field name="template_dc_body"><![CDATA[
 version: '2'
 services:
   db:
