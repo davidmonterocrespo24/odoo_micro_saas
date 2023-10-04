@@ -92,8 +92,6 @@ class DockerComposeTemplateVariable(models.Model):
     name = fields.Char(string="Placeholder", required=True)
 
     dc_template_id = fields.Many2one(comodel_name='docker.compose.template', required=True, ondelete='cascade')
-    model = fields.Char(string="Model Name", related='dc_template_id.model')
-
     line_type = fields.Selection([
         ('body', 'Body')], string="Variable location", required=True)
     field_type = fields.Selection([
