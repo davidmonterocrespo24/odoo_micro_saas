@@ -85,6 +85,7 @@ class DockerComposeTemplate(models.Model):
 
     def create_instance_from_template(self):
         self.ensure_one()
+
         return {
             'name': _('Create Instance'),
             'type': 'ir.actions.act_window',
@@ -95,7 +96,7 @@ class DockerComposeTemplate(models.Model):
                 'default_name': self.name + " from Template",
                 'default_result_dc_body': self._get_formatted_body(),
                 'default_template_dc_body': self.template_dc_body,
-                'default_variable_values': [(6, 0, self.variable_ids.ids)],
+                'default_variable_ids': [(6, 0, self.variable_ids.ids)],
                 'default_tag_ids': [(6, 0, self.tag_ids.ids)],
                 'default_repository_line': [(6, 0, self.repository_line.ids)],
             }
