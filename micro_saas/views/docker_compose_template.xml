@@ -39,7 +39,7 @@
                                        widget="ace" options="{'mode': 'xml' ,'theme': 'monokai'}"/>
                             </page>
 
-                            <page id="variables" name="Variables">
+                            <page id="template" name="Body Template">
                                 <label for="template_dc_body" string="Body Template"/>
                                 <field name="template_dc_body" widget="ace" options="{'mode': 'xml'}"
                                        placeholder="Use {{1}}, {{2}} as placeholders for dynamic variable"/>
