@@ -17,6 +17,7 @@
         "views/odoo_docker_instance.xml",
         "views/repository_repo.xml",
         "views/docker_compose_template.xml",
+        "data/data.xml",
     ],
     "images": ["static/icon.png"],
     "demo": [],

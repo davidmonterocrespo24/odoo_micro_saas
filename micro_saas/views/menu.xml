@@ -27,6 +27,6 @@
     <menuitem id="menu_repository_repo" name="Repository Repos" parent="menu_odoo_instance_management" sequence="10"/>
     <menuitem id="menu_repository_repo_form" name="Repository " parent="menu_repository_repo"
               action="action_repository_repo_form" sequence="10"/>
-    <menuitem id="menu_template" name="Template" parent="menu_odoo_instances" sequence="10"
+    <menuitem id="menu_template" name="Templates" parent="menu_odoo_instance_management" sequence="10"
               action="action_docker_compose_template_form"/>
 </odoo>
