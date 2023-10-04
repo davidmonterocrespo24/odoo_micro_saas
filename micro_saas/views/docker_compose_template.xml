@@ -45,7 +45,7 @@
                                 </field>
                                 <br/>
                                 <label for="demo_body" string="Demo Body"/>
-                                <field name="demo_body"  style="auto;color:rgb(255,255,255);  background: black;"/>
+                                <field name="demo_body" style="auto;color:rgb(255,255,255);  background: black;"/>
                             </page>
                         </notebook>
                     </sheet>

@@ -1,9 +1,10 @@
+import logging
 import os
 import socket
 import subprocess
 from datetime import datetime
+
 from odoo.exceptions import UserError
-import logging
 
 _logger = logging.getLogger(__name__)
 from odoo import models, fields, api
@@ -34,7 +35,7 @@ class OdooDockerInstance(models.Model):
         for instance in self:
             if not instance.name:
                 continue
-            instance.user_path =os.path.expanduser('~')
+            instance.user_path = os.path.expanduser('~')
             instance.instance_data_path = os.path.join(instance.user_path, 'odoo_docker', 'data', instance.name)
 
     @api.depends('repository_line')
@@ -147,8 +148,8 @@ class OdooDockerInstance(models.Model):
         try:
             os.makedirs(path)
         except Exception as e:
-                raise UserError(
-                        f"Error while creating directory {path} : {str(e)}")
+            raise UserError(
+                f"Error while creating directory {path} : {str(e)}")
 
     def _clone_repositories(self):
         for instance in self:
@@ -275,7 +276,7 @@ class OdooDockerInstance(models.Model):
             if instance.state == 'running':
                 self.add_to_log("[INFO] Restarting Odoo Instance")
                 # Ruta al archivo docker-compose.yml modificado
-                modified_path = instance.instance_data_path  + '/docker-compose.yml'
+                modified_path = instance.instance_data_path + '/docker-compose.yml'
                 try:
                     # Ejecuta el comando de Docker Compose para detener la instancia
                     cmd = f"docker-compose -f {modified_path} restart"
@@ -293,7 +294,7 @@ class OdooDockerInstance(models.Model):
             if instance.state == 'running':
                 self.add_to_log("[INFO] Removing Odoo Instance")
                 # Ruta al archivo docker-compose.yml modificado
-                modified_path = instance.instance_data_path  + '/docker-compose.yml'
+                modified_path = instance.instance_data_path + '/docker-compose.yml'
 
                 try:
                     # Ejecuta el comando de Docker Compose para detener y eliminar los contenedores
@@ -306,7 +307,7 @@ class OdooDockerInstance(models.Model):
                     pass
                 try:
                     # borra todos los archivos de la instancia y carpetas
-                    for root, dirs, files in os.walk(instance.instance_data_path , topdown=False):
+                    for root, dirs, files in os.walk(instance.instance_data_path, topdown=False):
                         for name in files:
                             os.remove(os.path.join(root, name))
                         for name in dirs:

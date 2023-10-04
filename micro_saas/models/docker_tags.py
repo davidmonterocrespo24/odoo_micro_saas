@@ -1,5 +1,5 @@
-
 from random import randint
+
 from odoo import fields, models
 
 
