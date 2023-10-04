@@ -41,6 +41,7 @@ class OdooDockerInstance(models.Model):
             self.tag_ids = self.template_id.tag_ids
             self.repository_line = self.template_id.repository_line
             self.result_dc_body = self._get_formatted_body(demo_fallback=True)
+            self.variable_ids= self.template_id.variable_ids
 
 
     @api.depends('name')
