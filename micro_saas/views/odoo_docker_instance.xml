@@ -27,7 +27,7 @@
                             <field name="addons_path"/>
                             <field name="user_path"/>
                             <field name="instance_data_path"/>
-                            <field name="tag_ids" widget="many2many_tags"/>
+                            <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                         </group>
                     </group>
                     <notebook>

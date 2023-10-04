@@ -4,11 +4,10 @@ from odoo.exceptions import UserError, ValidationError
 import logging
 
 _logger = logging.getLogger(__name__)
-from odoo import models, fields, api,_, Command
+from odoo import models, fields, api, _, Command
 
 
-
-#Docker Compose Template Autor David Montero Crespo
+# Docker Compose Template Autor David Montero Crespo
 class DockerComposeTemplate(models.Model):
     _name = 'docker.compose.template'
     _description = 'Docker Compose Template'
@@ -27,9 +26,10 @@ class DockerComposeTemplate(models.Model):
                                    string="Template Variables", store=True, compute='_compute_variable_ids',
                                    precompute=True, readonly=False)
 
-    demo_body= fields.Text(string="Demo Body", compute='_compute_demo_body', store=True)
+    demo_body = fields.Text(string="Demo Body", compute='_compute_demo_body', store=True)
     tag_ids = fields.Many2many('docker.compose.tag', string="Tags", tracking=True)
-
+    body = fields.Text(string="Template body")
+    repository_line = fields.One2many('repository.repo.line', 'instance_id', string='Repository and Branch')
 
     @api.depends('body')
     def _compute_variable_ids(self):
@@ -40,19 +40,22 @@ class DockerComposeTemplate(models.Model):
 
             body_variables = set(re.findall(r'{{[^{}]+}}', tmpl.body or ''))
             _logger.info("body_variables %s", body_variables)
-            _logger.info("tmpl.variable_ids %s", str(re.findall(r'{{[^{}]+}}', tmpl.body or '') ))
-            _logger.info("t  %s", str( tmpl.body ))
+            _logger.info("tmpl.variable_ids %s", str(re.findall(r'{{[^{}]+}}', tmpl.body or '')))
+            _logger.info("t  %s", str(tmpl.body))
 
             # body
             existing_body_variables = tmpl.variable_ids
             existing_body_variables = {var.name: var for var in existing_body_variables}
-            new_body_variable_names = [var_name for var_name in body_variables if var_name not in existing_body_variables]
-            deleted_body_variables = [var.id for name, var in existing_body_variables.items() if name not in body_variables]
+            new_body_variable_names = [var_name for var_name in body_variables if
+                                       var_name not in existing_body_variables]
+            deleted_body_variables = [var.id for name, var in existing_body_variables.items() if
+                                      name not in body_variables]
 
             to_create += [{'name': var_name, 'dc_template_id': tmpl.id} for var_name in set(new_body_variable_names)]
             to_delete += deleted_body_variables
 
-            update_commands = [Command.delete(to_delete_id) for to_delete_id in to_delete] + [Command.create(vals) for vals in to_create]
+            update_commands = [Command.delete(to_delete_id) for to_delete_id in to_delete] + [Command.create(vals) for
+                                                                                              vals in to_create]
             if update_commands:
                 tmpl.variable_ids = update_commands
 
@@ -79,7 +82,6 @@ class DockerComposeTemplate(models.Model):
             default['name'] = _('%(original_name)s (copy)', original_name=self.name)
         return super().copy(default)
 
-
     def _get_formatted_body(self, demo_fallback=False, variable_values=None):
         self.ensure_one()
         variable_values = variable_values or {}
@@ -88,6 +90,24 @@ class DockerComposeTemplate(models.Model):
             fallback_value = var.demo_value if demo_fallback else ' '
             body = body.replace(var.name, variable_values.get(var.name, fallback_value))
         return body
+
+    def create_instance_from_template(self):
+        self.ensure_one()
+        return {
+            'name': _('Create Instance'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'odoo.docker.instance',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_name': self.name + " from Template",
+                'default_docker_compose_body': self._get_formatted_body(),
+                'default_template_body': self.body,
+                'default_variable_values': [(6, 0, self.variable_ids.ids)],
+                'default_tag_ids': [(6, 0, self.tag_ids.ids)],
+                'default_repository_line': [(6, 0, self.repository_line.ids)],
+            }
+        }
 
 
 class DockerComposeTemplateVariable(models.Model):
@@ -101,7 +121,7 @@ class DockerComposeTemplateVariable(models.Model):
         ('field', 'Field of Model')], string="Type", default='free_text', required=True)
     field_name = fields.Char(string="Field")
     demo_value = fields.Char(string="Sample Value", default="Sample Value", required=True)
-
+    instance_id = fields.Many2one('odoo.docker.instance', string='Instance')
     _sql_constraints = [
         (
             'name_type_template_unique',
@@ -117,7 +137,6 @@ class DockerComposeTemplateVariable(models.Model):
         if self.filtered(lambda var: var.field_type == 'field' and not var.field_name):
             raise ValidationError(_("Field template variables must be associated with a field."))
 
-
     @api.constrains('field_name')
     def _check_field_name(self):
         for variable in self:
@@ -130,10 +149,6 @@ class DockerComposeTemplateVariable(models.Model):
 
             if variable.field_name not in model:
                 raise ValidationError(_("Invalid field name: %r", variable.field_name))
-
-
-
-
 
     @api.onchange('model')
     def _onchange_model_id(self):
@@ -162,7 +177,8 @@ class DockerComposeTemplateVariable(models.Model):
         if len(record) != 1:
             raise UserError(_('Fetching field value for template variable must use a single record'))
         if not self.field_type == 'field':
-            raise UserError(_('Cannot get field value from %(variable_type)s template variable', variable_type=self.field_type))
+            raise UserError(
+                _('Cannot get field value from %(variable_type)s template variable', variable_type=self.field_type))
 
         try:
             field_value = reduce(lambda record, field: record[field], self.field_name.split('.'), record.sudo(False))

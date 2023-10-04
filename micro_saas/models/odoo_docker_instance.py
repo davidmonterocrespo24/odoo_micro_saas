@@ -1,10 +1,9 @@
-import logging
 import os
 import socket
 import subprocess
 from datetime import datetime
-
 from odoo.exceptions import UserError
+import logging
 
 _logger = logging.getLogger(__name__)
 from odoo import models, fields, api
@@ -29,6 +28,13 @@ class OdooDockerInstance(models.Model):
     user_path = fields.Char(string='User Path', compute='_compute_user_path', store=True)
     instance_data_path = fields.Char(string='Instance Data Path', compute='_compute_user_path', store=True)
     tag_ids = fields.Many2many('docker.compose.tag', string="Tags", tracking=True)
+
+    template_body = fields.Text(string="Template body", tracking=True)
+    variable_ids = fields.One2many('docker.compose.template.variable', 'instance_id',
+                                   string="Template Variables", store=True, compute='_compute_variable_ids',
+                                   precompute=True, readonly=False)
+
+    docker_compose_body = fields.Text(string="Docker Compose Content", compute='_compute_docker_compose_body', store=True)
 
     @api.depends('name')
     def _compute_user_path(self):
