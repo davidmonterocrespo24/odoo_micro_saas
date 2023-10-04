@@ -40,12 +40,12 @@
                             </field>
                         </page>
                     </notebook>
-                    <notebook>
+                   <notebook>
                         <page string="Logs">
-                            <field name="log" colspan="4" nolabel="1"
-                                   style=" width: 100%; height: 600px;  overflow-y: auto;color:rgb(255,255,255);  background: black;"
-                                   widget="html" readonly="1"/>
-                        </page>
+                        <field name="log" colspan="4" nolabel="1"
+                               style=" width: 100%; height: 600px;  overflow-y: auto;color:rgb(255,255,255);  background: black;"
+                               widget="html" readonly="1"/>
+                     </page>
                     </notebook>
                 </sheet>
             </form>
@@ -63,8 +63,7 @@
                         <div class="oe_kanban_global_click">
                             <div class="o_kanban_record_bottom">
                                 <div class="oe_kanban_bottom_right">
-                                    <span
-                                        t-attf-class="badge #{['draft', 'error'].indexOf(record.state.raw_value) > -1 ? 'badge-secondary' : ['stopped'].indexOf(record.state.raw_value) > -1 ? 'badge-danger' : ['running'].indexOf(record.state.raw_value) > -1 ? 'badge-success' : ''}">
+                                    <span t-attf-class="badge #{['draft', 'error'].indexOf(record.state.raw_value) > -1 ? 'badge-secondary' : ['stopped'].indexOf(record.state.raw_value) > -1 ? 'badge-danger' : ['running'].indexOf(record.state.raw_value) > -1 ? 'badge-success' : ''}">
                                         <field name="state"/>
                                     </span>
                                 </div>
