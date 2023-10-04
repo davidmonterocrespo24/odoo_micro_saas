@@ -27,6 +27,7 @@ class OdooDockerInstance(models.Model):
     addons_path = fields.Char(string='Addons Path', compute='_compute_addons_path', store=True)
     user_path = fields.Char(string='User Path', compute='_compute_user_path', store=True)
     instance_data_path = fields.Char(string='Instance Data Path', compute='_compute_user_path', store=True)
+    tag_ids = fields.Many2many('docker.compose.tag', string="Tags", tracking=True)
 
     @api.depends('name')
     def _compute_user_path(self):

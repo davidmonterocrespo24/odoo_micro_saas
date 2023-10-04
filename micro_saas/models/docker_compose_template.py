@@ -28,6 +28,7 @@ class DockerComposeTemplate(models.Model):
                                    precompute=True, readonly=False)
 
     demo_body= fields.Text(string="Demo Body", compute='_compute_demo_body', store=True)
+    tag_ids = fields.Many2many('docker.compose.tag', string="Tags", tracking=True)
 
 
     @api.depends('body')

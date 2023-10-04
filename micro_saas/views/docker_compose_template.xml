@@ -9,6 +9,7 @@
                 <tree>
                     <field name="sequence" widget="handle"/>
                     <field name="name"/>
+                    <field name="tag_ids" widget="many2many_tags"/>
                     <field name="active"/>
                 </tree>
             </field>
@@ -21,8 +22,11 @@
                     <sheet>
                         <group>
                             <field name="name"/>
-                            <field name="sequence"/>
+                            <field name="sequence" invisible="1"/>
                             <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="tag_ids" widget="many2many_tags"/>
                         </group>
                         <notebook>
                             <page id="body" name="Body">
@@ -39,6 +43,8 @@
                                         <field name="name" invisible="1" force_save="1"/>
                                     </tree>
                                 </field>
+                                <br/>
+                                <label for="demo_body" string="Demo Body"/>
                                 <field name="demo_body"  style="auto;color:rgb(255,255,255);  background: black;"/>
                             </page>
                         </notebook>

@@ -4,3 +4,4 @@ acces_repository_repository,access_repository_repository,model_repository_repo,,
 acces_repository_repository_line,access_repository_repository_line,model_repository_repo_line,,1,1,1,1
 acces_docker_compose_template_user,access_docker_compose_template_user,model_docker_compose_template,,1,1,1,1
 acces_docker_compose_template_variable_user,access_docker_compose_template_variable_user,model_docker_compose_template_variable,,1,1,1,1
+acces_docker_compose_tag, access_docker_compose_tag, model_docker_compose_tag,,1,1,1,1

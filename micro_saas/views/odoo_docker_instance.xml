@@ -27,6 +27,7 @@
                             <field name="addons_path"/>
                             <field name="user_path"/>
                             <field name="instance_data_path"/>
+                            <field name="tag_ids" widget="many2many_tags"/>
                         </group>
                     </group>
                     <notebook>
@@ -87,6 +88,9 @@
                                     </div>
                                     <div class="oe_kanban_card_content_field">
                                         <field name="addons_path"/>
+                                    </div>
+                                    <div class="oe_kanban_card_content_field">
+                                        <field name="tag_ids" widget="many2many_tags"/>
                                     </div>
                                 </div>
                                 <br/>
