@@ -41,7 +41,7 @@ class OdooDockerInstance(models.Model):
             self._compute_variable_ids()
             self.result_dc_body = self._get_formatted_body(demo_fallback=True)
         else:
-            _logger.info("Template ID: %s", self.template_id)
+            _logger.info("Else Template ID: %s", self.template_id)
 
     @api.depends('name')
     def _compute_user_path(self):
