@@ -93,8 +93,8 @@ class DockerComposeTemplate(models.Model):
             'target': 'current',
             'context': {
                 'default_name': self.name + " from Template",
-                'default_docker_compose_body': self._get_formatted_body(),
-                'default_template_body': self.template_dc_body,
+                'default_result_dc_body': self._get_formatted_body(),
+                'default_template_dc_body': self.template_dc_body,
                 'default_variable_values': [(6, 0, self.variable_ids.ids)],
                 'default_tag_ids': [(6, 0, self.tag_ids.ids)],
                 'default_repository_line': [(6, 0, self.repository_line.ids)],
