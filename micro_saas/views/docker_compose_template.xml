@@ -59,8 +59,8 @@
 
 
         <record id="dc_template_variable_view_tree" model="ir.ui.view">
-        <field name="name">dc.template.variable.view.tree</field>
-        <field name="model">dc.template.variable</field>
+        <field name="name">docker.compose.template.variable.tree</field>
+        <field name="model">docker.compose.template.variable</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
@@ -74,8 +74,8 @@
         </field>
     </record>
     <record id="dc_template_variable_view_form" model="ir.ui.view">
-        <field name="name">dc.template.variable.view.form</field>
-        <field name="model">dc.template.variable</field>
+        <field name="name">docker.compose.template.variable.view.form</field>
+        <field name="model">docker.compose.template.variable</field>
         <field name="arch" type="xml">
             <form string="Template Button">
                 <sheet>
