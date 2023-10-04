@@ -51,7 +51,7 @@ class DockerComposeTemplate(models.Model):
             if update_commands:
                 tmpl.variable_ids = update_commands
 
-    @api.depends('template_dc_body', 'variable_ids.demo_value')
+    @api.depends('template_dc_body', 'variable_ids')
     def _compute_result_dc_body(self):
         for template in self:
             template.result_dc_body = template._get_formatted_body(demo_fallback=True)
