@@ -36,12 +36,14 @@ class OdooDockerInstance(models.Model):
     def onchange_template_id(self):
         for instance in self:
             if instance.template_id:
-                _logger.info("Template ID: %s", instance.template_id)
+                _logger.info("Value Template ID: %s", instance.template_id)
                 instance.template_dc_body = instance.template_id.template_dc_body
                 instance.tag_ids = instance.template_id.tag_ids
                 instance.repository_line = instance.template_id.repository_line
                 self._compute_variable_ids()
                 instance.result_dc_body = self._get_formatted_body(demo_fallback=True)
+            else:
+                _logger.info("Template ID: %s", instance.template_id)
 
     @api.depends('name')
     def _compute_user_path(self):
