@@ -37,9 +37,9 @@ class DockerComposeTemplate(models.Model):
             to_delete = []
             to_create = []
 
-            body_variables = set(re.findall(r'{{\w+}}', tmpl.body or ''))
+            body_variables = set(re.findall(r'{{[^{}]+}}', tmpl.body or ''))
             _logger.info("body_variables %s", body_variables)
-            _logger.info("tmpl.variable_ids %s", str(re.findall(r'{{\w+}}', tmpl.body or '') ))
+            _logger.info("tmpl.variable_ids %s", str(re.findall(r'{{[^{}]+}}', tmpl.body or '') ))
             _logger.info("t  %s", str( tmpl.body ))
 
             # body
