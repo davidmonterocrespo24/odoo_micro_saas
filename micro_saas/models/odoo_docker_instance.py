@@ -37,7 +37,6 @@ class OdooDockerInstance(models.Model):
             self.template_dc_body = self.template_id.template_dc_body
             self.tag_ids = self.template_id.tag_ids
             self.repository_line = self.template_id.repository_line
-            self._compute_variable_ids()
             self.result_dc_body = self._get_formatted_body(demo_fallback=True)
 
 
