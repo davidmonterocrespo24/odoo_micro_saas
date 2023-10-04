@@ -37,7 +37,8 @@ class DockerComposeTemplate(models.Model):
             to_delete = []
             to_create = []
 
-            body_variables = set(re.findall(r'{{\w+}}', tmpl.body or ''))  # Cambio en la expresión regular
+            body_variables = set(re.findall(r'{{\w+}}', tmpl.body or ''))
+            _logger.info("body_variables %s", body_variables)
 
             # body
             existing_body_variables = tmpl.variable_ids
