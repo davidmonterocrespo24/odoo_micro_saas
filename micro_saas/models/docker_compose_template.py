@@ -12,6 +12,7 @@ from odoo import models, fields, api,_, Command
 class DockerComposeTemplate(models.Model):
     _name = 'docker.compose.template'
     _description = 'Docker Compose Template'
+    _order = 'sequence asc, id'
 
     _sql_constraints = [
         ('name_uniq', 'unique (name)', 'The name of the template must be unique !'),
@@ -141,7 +142,10 @@ class DockerComposeTemplateVariable(models.Model):
     @api.depends('line_type', 'name')
     def _compute_display_name(self):
         for variable in self:
-            variable.display_name = variable.line_type
+            if variable.line_type == 'body':
+                variable.display_name = f'{variable.line_type} - {variable.name}'
+            else:
+                variable.display_name = variable.line_type
 
     @api.onchange('model')
     def _onchange_model_id(self):
