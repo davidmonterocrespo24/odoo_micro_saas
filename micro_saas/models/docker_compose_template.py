@@ -18,23 +18,16 @@ class DockerComposeTemplate(models.Model):
         ('name_uniq', 'unique (name)', 'The name of the template must be unique !'),
     ]
 
-    name = fields.Char(string="Name", tracking=True)
+    name = fields.Char(string="Name", required=True)
     sequence = fields.Integer(required=True, default=0)
     active = fields.Boolean(default=True)
     error_msg = fields.Char(string="Error Message")
-    model_id = fields.Many2one(comodel_name='ir.model', string='Applies to', ondelete='cascade',
-                               default=lambda self: self.env.ref('micro_saas.model_odoo_docker_instance'),
-                               help="Model on which the Server action for sending WhatsApp will be created.",
-                               required=True, tracking=True)
-    model = fields.Char(
-        string='Related Document Model', related='model_id.model',
-        index=True, precompute=True, store=True, readonly=True)
     body = fields.Text(string="Template body", tracking=True)
     variable_ids = fields.One2many('docker.compose.template.variable', 'dc_template_id',
                                    string="Template Variables", store=True, compute='_compute_variable_ids',
                                    precompute=True, readonly=False)
 
-    demo_body= fields.Text(string="Demo Body", compute='_compute_demo_body', store=True)
+    demo_body= fields.Html(string="Demo Body", compute='_compute_demo_body', store=True)
 
 
     @api.depends('body')

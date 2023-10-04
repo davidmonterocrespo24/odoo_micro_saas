@@ -7,8 +7,8 @@
             <field name="model">docker.compose.template</field>
             <field name="arch" type="xml">
                 <tree>
+                    <field name="sequence" widget="handle"/>
                     <field name="name"/>
-                    <field name="sequence"/>
                     <field name="active"/>
                 </tree>
             </field>
@@ -23,9 +23,6 @@
                             <field name="name"/>
                             <field name="sequence"/>
                             <field name="active"/>
-                            <field name="error_msg"/>
-                            <field name="model"/>
-                            <field name="model_id"/>
                         </group>
                         <notebook>
                             <page id="body" name="Body">
@@ -39,15 +36,12 @@
                                         <field name="display_name" string="Name"/>
                                         <field name="demo_value" required="1"/>
                                         <field name="field_type"/>
-                                        <field name="field_name"
-                                               widget="DynamicModelFieldSelectorChar"
-                                               options="{'model': 'model'}"/>
-                                        <field name="model" invisible="1"/>
                                         <field name="line_type" invisible="1" force_save="1"/>
                                         <field name="name" invisible="1" force_save="1"/>
                                     </tree>
                                 </field>
-                                <field name="demo_body"/>
+                                <field name="demo_body"  style="auto;color:rgb(255,255,255);  background: black;"
+                                   widget="html" readonly="1"/>
                             </page>
                         </notebook>
                     </sheet>
@@ -66,7 +60,6 @@
                     <field name="model"/>
                     <field name="line_type"/>
                     <field name="field_type"/>
-                    <field name="field_name"/>
                     <field name="demo_value"/>
                 </tree>
             </field>
@@ -86,7 +79,6 @@
                             <group>
                                 <field name="line_type"/>
                                 <field name="field_type"/>
-                                <field name="field_name"/>
                                 <field name="demo_value"/>
                             </group>
                         </group>
