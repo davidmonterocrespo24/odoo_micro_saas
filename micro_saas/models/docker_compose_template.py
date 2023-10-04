@@ -39,6 +39,8 @@ class DockerComposeTemplate(models.Model):
 
             body_variables = set(re.findall(r'{{\w+}}', tmpl.body or ''))
             _logger.info("body_variables %s", body_variables)
+            _logger.info("tmpl.variable_ids %s", str(re.findall(r'{{\w+}}', tmpl.body or '') ))
+            _logger.info("t  %s", str( tmpl.body ))
 
             # body
             existing_body_variables = tmpl.variable_ids
