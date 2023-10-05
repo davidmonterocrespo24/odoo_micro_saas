@@ -1,7 +1,8 @@
-from functools import reduce
-import re
-from odoo.exceptions import UserError, ValidationError
 import logging
+import re
+from functools import reduce
+
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 from odoo import models, fields, api, _, Command
@@ -114,72 +115,74 @@ class DockerComposeTemplateVariable(models.Model):
     _sql_constraints = [
         (
             'name_type_template_unique',
-            'UNIQUE(name)',
+            'UNIQUE(name, dc_template_id,instance_id)',
             'Variable names must be unique for a given template'
         ),
     ]
 
-    # @api.constrains('field_type', 'demo_value')
-    # def _check_demo_values(self):
-    #     if self.filtered(lambda var: var.field_type == 'free_text' and not var.demo_value):
-    #         raise ValidationError(_('Free Text template variables must have a demo value.'))
-    #     if self.filtered(lambda var: var.field_type == 'field' and not var.field_name):
-    #         raise ValidationError(_("Field template variables must be associated with a field."))
-    #
-    # @api.constrains('field_name')
-    # def _check_field_name(self):
-    #     for variable in self:
-    #         if not variable.field_name or self.user_has_groups('base.group_system'):
-    #             continue
-    #
-    #         model = self.env[variable.model]
-    #         if not model.check_access_rights('read', raise_exception=False):
-    #             raise ValidationError(_("You can not select field of %r.", variable.model))
-    #
-    #         if variable.field_name not in model:
-    #             raise ValidationError(_("Invalid field name: %r", variable.field_name))
+    @api.constrains('field_type', 'demo_value')
+    def _check_demo_values(self):
+        if self.filtered(lambda var: var.field_type == 'free_text' and not var.demo_value):
+            raise ValidationError(_('Free Text template variables must have a demo value.'))
+        if self.filtered(lambda var: var.field_type == 'field' and not var.field_name):
+            raise ValidationError(_("Field template variables must be associated with a field."))
 
-
-    def _get_variables_value(self, record):
-        value_by_name = {}
+    @api.constrains('field_name')
+    def _check_field_name(self):
         for variable in self:
-            if variable.field_type == 'field':
-                value = variable._find_value_from_field_chain(record)
-            else:
-                value = variable.demo_value
+            if not variable.field_name or self.user_has_groups('base.group_system'):
+                continue
 
-            value_str = value and str(value) or ''
-            value_by_name[variable.name] = value_str
+            model = self.env[variable.model]
+            if not model.check_access_rights('read', raise_exception=False):
+                raise ValidationError(_("You can not select field of %r.", variable.model))
 
-        return value_by_name
+            if variable.field_name not in model:
+                raise ValidationError(_("Invalid field name: %r", variable.field_name))
 
-    # ------------------------------------------------------------
-    # TOOLS
-    # ------------------------------------------------------------
 
-    def _find_value_from_field_chain(self, record):
-        """Get the value of field, returning display_name(s) if the field is a model."""
-        self.ensure_one()
-        if len(record) != 1:
-            raise UserError(_('Fetching field value for template variable must use a single record'))
-        if not self.field_type == 'field':
-            raise UserError(
-                _('Cannot get field value from %(variable_type)s template variable', variable_type=self.field_type))
+def _get_variables_value(self, record):
+    value_by_name = {}
+    for variable in self:
+        if variable.field_type == 'field':
+            value = variable._find_value_from_field_chain(record)
+        else:
+            value = variable.demo_value
 
-        try:
-            field_value = reduce(lambda record, field: record[field], self.field_name.split('.'), record.sudo(False))
-        except KeyError:
-            raise UserError(_("Invalid field chain %r", self.field_name))
-        except Exception:
-            raise UserError(_("Not able to get the value of field %r", self.field_name))
-        if isinstance(field_value, models.Model):
-            return ' '.join(value.display_name for value in field_value)
-        return field_value
+        value_str = value and str(value) or ''
+        value_by_name[variable.name] = value_str
 
-    def _extract_variable_index(self):
-        """ Extract variable index, located between '{{}}' markers. """
-        self.ensure_one()
-        try:
-            return int(self.name.lstrip('{{').rstrip('}}'))
-        except ValueError:
-            return None
+    return value_by_name
+
+
+# ------------------------------------------------------------
+# TOOLS
+# ------------------------------------------------------------
+
+def _find_value_from_field_chain(self, record):
+    """Get the value of field, returning display_name(s) if the field is a model."""
+    self.ensure_one()
+    if len(record) != 1:
+        raise UserError(_('Fetching field value for template variable must use a single record'))
+    if not self.field_type == 'field':
+        raise UserError(
+            _('Cannot get field value from %(variable_type)s template variable', variable_type=self.field_type))
+
+    try:
+        field_value = reduce(lambda record, field: record[field], self.field_name.split('.'), record.sudo(False))
+    except KeyError:
+        raise UserError(_("Invalid field chain %r", self.field_name))
+    except Exception:
+        raise UserError(_("Not able to get the value of field %r", self.field_name))
+    if isinstance(field_value, models.Model):
+        return ' '.join(value.display_name for value in field_value)
+    return field_value
+
+
+def _extract_variable_index(self):
+    """ Extract variable index, located between '{{}}' markers. """
+    self.ensure_one()
+    try:
+        return int(self.name.lstrip('{{').rstrip('}}'))
+    except ValueError:
+        return None

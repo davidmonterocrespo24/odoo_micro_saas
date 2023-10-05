@@ -19,8 +19,8 @@ class OdooDockerInstance(models.Model):
     name = fields.Char(string='Instance Name', required=True)
     state = fields.Selection([('draft', 'Draft'), ('stopped', 'Stopped'), ('running', 'Running'), ('error', 'Error')],
                              string='State', default='draft')
-    http_port = fields.Char(string='HTTP Port', required=True)
-    longpolling_port = fields.Char(string='Longpolling Port', required=True)
+    http_port = fields.Char(string='HTTP Port')
+    longpolling_port = fields.Char(string='Longpolling Port')
 
     instance_url = fields.Char(string='Instance URL', compute='_compute_instance_url', store=True)
     repository_line = fields.One2many('repository.repo.line', 'instance_id', string='Repository and Branch')
@@ -126,30 +126,18 @@ class OdooDockerInstance(models.Model):
         # Si no se encuentra ningún puerto disponible en el rango especificado
         self.add_to_log("[ERROR] No se encontraron puertos disponibles en el rango especificado.")
 
-    def _update_docker_compose_file(self, http_port, longpolling_port):
+    def _update_docker_compose_file(self):
         # Ruta al archivo docker-compose.yml de plantilla
-        template_path = get_resource_path('micro_saas', 'data', 'docker-compose-template.yml')
-        if not os.path.exists(template_path):
-            self.add_to_log("[ERROR] No se encontró el archivo docker-compose-template.yml")
+
 
         # Ruta donde se guardará el archivo docker-compose.yml modificado
         if not os.path.exists(self.instance_data_path):
             _logger.info("Creating directory %s", self.instance_data_path)
             self._makedirs(self.instance_data_path)
         modified_path = os.path.join(self.instance_data_path, 'docker-compose.yml')
-
-        # Lee el archivo de plantilla
-        with open(template_path, "r") as template_file:
-            template_content = template_file.read()
-
-        # Reemplaza las variables en el archivo de plantilla
-        modified_content = template_content.replace("{{HTTP-PORT}}", str(http_port)).replace("{{LONGPOLLING-PORT}}",
-                                                                                             str(longpolling_port)).replace(
-            "{{INSTANCE-NAME}}", self.name).replace("{{INSTANCE-DIR}}", self.instance_data_path)
-
         # Guarda el archivo docker-compose.yml modificado
         with open(modified_path, "w") as modified_file:
-            modified_file.write(modified_content)
+            modified_file.write(self.result_dc_body)
 
     def _get_repo_name(self, line):
         if not line.repository_id or not line.name or not line.repository_id.name:
@@ -233,19 +221,21 @@ class OdooDockerInstance(models.Model):
 
     def start_instance(self):
         # Obtén un puerto disponible
-        if self._is_docker_installed() or self._is_docker_compose_installed():
-            return False
+        #if self._is_docker_installed() or self._is_docker_compose_installed():
+        #    return False
         self.add_to_log("[INFO] Starting Odoo Instance")
         self.add_to_log("[INFO] Finding available port")
         http_port = self._get_available_port()
         longpolling_port = self._get_available_port(start_port=http_port + 1)
-
-        self.add_to_log("[INFO] Port available: " + str(http_port) + " and " + str(longpolling_port))
-
-        # Actualiza el archivo docker-compose con el puerto
-        self._update_docker_compose_file(http_port, longpolling_port)
         self.http_port = str(http_port)
         self.longpolling_port = str(longpolling_port)
+        self.add_to_log("[INFO] Port available: " + str(http_port) + " and " + str(longpolling_port))
+
+        self.variable_ids.filtered(lambda r: r.name == '{{HTTP_PORT}}').demo_value = str(http_port)
+        self.variable_ids.filtered(lambda r: r.name == '{{LONGPOLLING_PORT}}').demo_value = str(longpolling_port)
+
+        self._update_docker_compose_file()
+
 
         # Clonar repositorios y crear odoo.conf
         self._clone_repositories()
