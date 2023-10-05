@@ -47,7 +47,7 @@ Docker Compose simplifies the management of multi-container Docker applications.
 1. Follow the official Docker Compose installation guide: [Docker Compose Installation](https://docs.docker.com/compose/install/).
 2. Select the instructions relevant to your operating system.
 3. Confirm the installation by running `docker-compose --version`.
-
+ 
 ### Git
 
 Git is a distributed version control system. To install Git:
