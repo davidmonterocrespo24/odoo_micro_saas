@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <odoo>
 
-    <record id="action_odoo_docker_instance" model="ir.actions.act_window">
+    <record id="action_docker_instance" model="ir.actions.act_window">
         <field name="name">Odoo Docker Instance</field>
         <field name="res_model">odoo.docker.instance</field>
         <field name="view_mode">kanban,tree,form</field>
-        <field name="context">{'search_default_groupby_state': 1}</field>
+         <field name="context">{'search_default_groupby_state': 1}</field>
     </record>
     <!-- Acción para abrir la vista de formulario -->
     <record id="action_repository_repo_form" model="ir.actions.act_window">
@@ -23,7 +23,7 @@
     <menuitem id="menu_odoo_instance_management" name="Instance Management" sequence="10"
               web_icon="micro_saas,static/description/icon.png"></menuitem>
     <menuitem id="menu_odoo_instances" name="Odoo Instances" parent="menu_odoo_instance_management"
-              action="action_odoo_docker_instance" sequence="10"/>
+              action="action_docker_instance" sequence="10"/>
     <!-- Menú para acceder a la vista de formulario -->
     <menuitem id="menu_repository_repo" name="Repository Repos" parent="menu_odoo_instance_management" sequence="10"/>
     <menuitem id="menu_repository_repo_form" name="Repository " parent="menu_repository_repo"
