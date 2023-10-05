@@ -41,8 +41,7 @@ class OdooDockerInstance(models.Model):
             self.tag_ids = self.template_id.tag_ids
             self.repository_line = self.template_id.repository_line
             self.result_dc_body = self._get_formatted_body(demo_fallback=True)
-            self.variable_ids= self.template_id.variable_ids
-
+            self.variable_ids = self.template_id.variable_ids
 
     @api.depends('name')
     def _compute_user_path(self):
@@ -50,7 +49,7 @@ class OdooDockerInstance(models.Model):
             if not instance.name:
                 continue
             instance.user_path = os.path.expanduser('~')
-            instance.instance_data_path = os.path.join(instance.user_path, 'odoo_docker', 'data', instance.name)
+            instance.instance_data_path = os.path.join(instance.user_path, 'odoo_docker', 'data', instance.name.replace('.', '_').replace(' ', '_').lower())
             instance.result_dc_body = self._get_formatted_body(demo_fallback=True)
 
     @api.depends('repository_line')
@@ -128,7 +127,6 @@ class OdooDockerInstance(models.Model):
 
     def _update_docker_compose_file(self):
         # Ruta al archivo docker-compose.yml de plantilla
-
 
         # Ruta donde se guardará el archivo docker-compose.yml modificado
         if not os.path.exists(self.instance_data_path):
@@ -221,7 +219,7 @@ class OdooDockerInstance(models.Model):
 
     def start_instance(self):
         # Obtén un puerto disponible
-        #if self._is_docker_installed() or self._is_docker_compose_installed():
+        # if self._is_docker_installed() or self._is_docker_compose_installed():
         #    return False
         self.add_to_log("[INFO] Starting Odoo Instance")
         self.add_to_log("[INFO] Finding available port")
@@ -235,7 +233,6 @@ class OdooDockerInstance(models.Model):
         self.variable_ids.filtered(lambda r: r.name == '{{LONGPOLLING_PORT}}').demo_value = str(longpolling_port)
 
         self._update_docker_compose_file()
-
 
         # Clonar repositorios y crear odoo.conf
         self._clone_repositories()
