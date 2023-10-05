@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Vista de Lista para DockerComposeTemplate -->
+        <record id="view_docker_compose_template_tree" model="ir.ui.view">
+            <field name="name">docker.compose.template.tree</field>
+            <field name="model">docker.compose.template</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        <record id="view_docker_compose_template_form" model="ir.ui.view">
+            <field name="name">docker.compose.template.form</field>
+            <field name="model">docker.compose.template</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="create_instance_from_template" string="Create Instance from Template"
+                                type="object" class="oe_highlight"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="sequence" invisible="1"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                        </group>
+                        <notebook>
+                            <page id="result_dc_body" name="Result of Docker Compose">
+                                <field name="result_dc_body"
+                                       readonly="1"
+                                       widget="ace" options="{'mode': 'xml' ,'theme': 'monokai'}"/>
+                            </page>
+
+                            <page id="template" name="Body Template">
+                                <label for="template_dc_body" string="Body Template"/>
+                                <field name="template_dc_body" widget="ace" options="{'mode': 'xml'}"
+                                       placeholder="Use {{1}}, {{2}} as placeholders for dynamic variable"/>
+                            </page>
+                        </notebook>
+                        <notebook>
+                            <page string="Variables">
+                                <field name="variable_ids">
+                                    <tree editable="bottom" create="false" delete="false">
+                                        <field name="display_name" string="Name"/>
+                                        <field name="demo_value" required="1"/>
+                                        <field name="field_type"/>
+                                        <field name="name" invisible="1" force_save="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                        <notebook>
+                            <page string="Repository">
+                                <field name="repository_line">
+                                    <tree string="Repository and Branch" editable="bottom">
+                                        <field name="repository_id"/>
+                                        <field name="name"/>
+                                        <field name="is_clone" readonly="1" widget="boolean_button"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="dc_template_variable_view_tree" model="ir.ui.view">
+            <field name="name">docker.compose.template.variable.tree</field>
+            <field name="model">docker.compose.template.variable</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="dc_template_id"/>
+                    <field name="field_type"/>
+                    <field name="demo_value"/>
+                </tree>
+            </field>
+        </record>
+        <record id="dc_template_variable_view_form" model="ir.ui.view">
+            <field name="name">docker.compose.template.variable.view.form</field>
+            <field name="model">docker.compose.template.variable</field>
+            <field name="arch" type="xml">
+                <form string="Template Button">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="dc_template_id"/>
+                            </group>
+                            <group>
+                                <field name="field_type"/>
+                                <field name="demo_value"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

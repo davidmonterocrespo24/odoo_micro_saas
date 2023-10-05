@@ -1,9 +1,10 @@
+import logging
 import os
 import socket
 import subprocess
 from datetime import datetime
+
 from odoo.exceptions import UserError
-import logging
 
 _logger = logging.getLogger(__name__)
 from odoo import models, fields, api
@@ -12,6 +13,7 @@ from odoo.modules.module import get_resource_path
 
 class OdooDockerInstance(models.Model):
     _name = 'odoo.docker.instance'
+    _inherit = "docker.compose.template"
     _description = 'Odoo Docker Instance'
 
     name = fields.Char(string='Instance Name', required=True)
@@ -27,14 +29,29 @@ class OdooDockerInstance(models.Model):
     addons_path = fields.Char(string='Addons Path', compute='_compute_addons_path', store=True)
     user_path = fields.Char(string='User Path', compute='_compute_user_path', store=True)
     instance_data_path = fields.Char(string='Instance Data Path', compute='_compute_user_path', store=True)
+    template_id = fields.Many2one('docker.compose.template', string='Template')
+    variable_ids = fields.One2many('docker.compose.template.variable', 'instance_id',
+                                   string="Template Variables", store=True, compute='_compute_variable_ids',
+                                   precompute=True, readonly=False)
+
+    @api.onchange('template_id')
+    def onchange_template_id(self):
+        if self.template_id:
+            self.template_dc_body = self.template_id.template_dc_body
+            self.tag_ids = self.template_id.tag_ids
+            self.repository_line = self.template_id.repository_line
+            self.result_dc_body = self._get_formatted_body(demo_fallback=True)
+            self.variable_ids= self.template_id.variable_ids
+
 
     @api.depends('name')
     def _compute_user_path(self):
         for instance in self:
             if not instance.name:
                 continue
-            instance.user_path =os.path.expanduser('~')
+            instance.user_path = os.path.expanduser('~')
             instance.instance_data_path = os.path.join(instance.user_path, 'odoo_docker', 'data', instance.name)
+            instance.result_dc_body = self._get_formatted_body(demo_fallback=True)
 
     @api.depends('repository_line')
     def _compute_addons_path(self):
@@ -109,30 +126,18 @@ class OdooDockerInstance(models.Model):
         # Si no se encuentra ningún puerto disponible en el rango especificado
         self.add_to_log("[ERROR] No se encontraron puertos disponibles en el rango especificado.")
 
-    def _update_docker_compose_file(self, http_port, longpolling_port):
+    def _update_docker_compose_file(self):
         # Ruta al archivo docker-compose.yml de plantilla
-        template_path = get_resource_path('micro_saas', 'data', 'docker-compose-template.yml')
-        if not os.path.exists(template_path):
-            self.add_to_log("[ERROR] No se encontró el archivo docker-compose-template.yml")
+
 
         # Ruta donde se guardará el archivo docker-compose.yml modificado
         if not os.path.exists(self.instance_data_path):
             _logger.info("Creating directory %s", self.instance_data_path)
             self._makedirs(self.instance_data_path)
         modified_path = os.path.join(self.instance_data_path, 'docker-compose.yml')
-
-        # Lee el archivo de plantilla
-        with open(template_path, "r") as template_file:
-            template_content = template_file.read()
-
-        # Reemplaza las variables en el archivo de plantilla
-        modified_content = template_content.replace("{{HTTP-PORT}}", str(http_port)).replace("{{LONGPOLLING-PORT}}",
-                                                                                             str(longpolling_port)).replace(
-            "{{INSTANCE-NAME}}", self.name).replace("{{INSTANCE-DIR}}", self.instance_data_path)
-
         # Guarda el archivo docker-compose.yml modificado
         with open(modified_path, "w") as modified_file:
-            modified_file.write(modified_content)
+            modified_file.write(self.result_dc_body)
 
     def _get_repo_name(self, line):
         if not line.repository_id or not line.name or not line.repository_id.name:
@@ -146,8 +151,8 @@ class OdooDockerInstance(models.Model):
         try:
             os.makedirs(path)
         except Exception as e:
-                raise UserError(
-                        f"Error while creating directory {path} : {str(e)}")
+            raise UserError(
+                f"Error while creating directory {path} : {str(e)}")
 
     def _clone_repositories(self):
         for instance in self:
@@ -216,19 +221,21 @@ class OdooDockerInstance(models.Model):
 
     def start_instance(self):
         # Obtén un puerto disponible
-        if self._is_docker_installed() or self._is_docker_compose_installed():
-            return False
+        #if self._is_docker_installed() or self._is_docker_compose_installed():
+        #    return False
         self.add_to_log("[INFO] Starting Odoo Instance")
         self.add_to_log("[INFO] Finding available port")
         http_port = self._get_available_port()
         longpolling_port = self._get_available_port(start_port=http_port + 1)
-
-        self.add_to_log("[INFO] Port available: " + str(http_port) + " and " + str(longpolling_port))
-
-        # Actualiza el archivo docker-compose con el puerto
-        self._update_docker_compose_file(http_port, longpolling_port)
         self.http_port = str(http_port)
         self.longpolling_port = str(longpolling_port)
+        self.add_to_log("[INFO] Port available: " + str(http_port) + " and " + str(longpolling_port))
+
+        self.variable_ids.filtered(lambda r: r.name == '{{HTTP_PORT}}').demo_value = str(http_port)
+        self.variable_ids.filtered(lambda r: r.name == '{{LONGPOLLING_PORT}}').demo_value = str(longpolling_port)
+
+        self._update_docker_compose_file()
+
 
         # Clonar repositorios y crear odoo.conf
         self._clone_repositories()
@@ -274,7 +281,7 @@ class OdooDockerInstance(models.Model):
             if instance.state == 'running':
                 self.add_to_log("[INFO] Restarting Odoo Instance")
                 # Ruta al archivo docker-compose.yml modificado
-                modified_path = instance.instance_data_path  + '/docker-compose.yml'
+                modified_path = instance.instance_data_path + '/docker-compose.yml'
                 try:
                     # Ejecuta el comando de Docker Compose para detener la instancia
                     cmd = f"docker-compose -f {modified_path} restart"
@@ -292,7 +299,7 @@ class OdooDockerInstance(models.Model):
             if instance.state == 'running':
                 self.add_to_log("[INFO] Removing Odoo Instance")
                 # Ruta al archivo docker-compose.yml modificado
-                modified_path = instance.instance_data_path  + '/docker-compose.yml'
+                modified_path = instance.instance_data_path + '/docker-compose.yml'
 
                 try:
                     # Ejecuta el comando de Docker Compose para detener y eliminar los contenedores
@@ -305,7 +312,7 @@ class OdooDockerInstance(models.Model):
                     pass
                 try:
                     # borra todos los archivos de la instancia y carpetas
-                    for root, dirs, files in os.walk(instance.instance_data_path , topdown=False):
+                    for root, dirs, files in os.walk(instance.instance_data_path, topdown=False):
                         for name in files:
                             os.remove(os.path.join(root, name))
                         for name in dirs:
