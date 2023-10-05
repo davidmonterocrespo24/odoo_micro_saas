@@ -13,7 +13,7 @@ The **Micro SaaS - Odoo Docker Instance Management** module is a powerful and fl
 - **Intuitive Views:** Enjoy intuitive and functional views that facilitate the management and monitoring of your instances. The Kanban view provides a quick overview, while the form view allows for detailed configurations.
 - **Docker Compatibility:** Leverage the power of Docker for efficient container management. This module seamlessly integrates with Docker, ensuring optimal deployment and resource management.
 
-## Key Benefits
+## Key Benefits 
 
 - **Time Savings:** Reduce the time spent configuring and managing Odoo instances by automating repetitive tasks.
 - **Enhanced Productivity:** Facilitate collaboration among development teams in software projects by providing separate and configurable development environments.
