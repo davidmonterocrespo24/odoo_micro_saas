@@ -197,10 +197,7 @@
                             </div>
                         </div>
                     </t>
-                    <group>
-                        <filter string="Group by State" name="group_by_state" domain="[]"
-                                context="{'group_by': 'state'}"/>
-                    </group>
+
                 </templates>
             </kanban>
         </field>
