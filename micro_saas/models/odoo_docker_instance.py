@@ -66,7 +66,7 @@ class OdooDockerInstance(models.Model):
         """Agrega un mensaje al registro (log) y lo limpia si supera 1000 caracteres."""
         now = datetime.now()
         new_log = "</br> \n#" + str(now.strftime("%m/%d/%Y, %H:%M:%S")) + " " + str(message) + " " + str(self.log)
-        if len(new_log) > 1000:
+        if len(new_log) > 10000:
             # Si el registro supera los 1000 caracteres, límpialo
             new_log = "</br>" + str(now.strftime("%m/%d/%Y, %H:%M:%S")) + " " + str(message)
         self.log = new_log
@@ -252,7 +252,8 @@ class OdooDockerInstance(models.Model):
         except Exception as e:
             # Maneja cualquier otro error que pueda ocurrir al ejecutar Docker Compose
             # Imprimir el stderr para obtener más detalles
-            self.add_to_log("[ERROR] Error to execute docker-compose command")
+            cmd = f"docker-compose -f {modified_path} up -d"
+            self.add_to_log("[ERROR] Error to execute docker-compose command %s" % cmd)
             self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8'))
             self.write({'state': 'error'})
 
