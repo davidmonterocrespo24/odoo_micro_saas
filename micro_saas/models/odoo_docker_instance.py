@@ -297,7 +297,6 @@ class OdooDockerInstance(models.Model):
         # Detener y eliminar los contenedores asociados antes de borrar el registro
         for instance in self:
             if instance.state == 'running':
-                self.add_to_log("[INFO] Removing Odoo Instance")
                 # Ruta al archivo docker-compose.yml modificado
                 modified_path = instance.instance_data_path + '/docker-compose.yml'
 
