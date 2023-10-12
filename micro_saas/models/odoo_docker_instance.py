@@ -20,10 +20,8 @@ class OdooDockerInstance(models.Model):
                              string='State', default='draft')
     http_port = fields.Char(string='HTTP Port')
     longpolling_port = fields.Char(string='Longpolling Port')
-
     instance_url = fields.Char(string='Instance URL', compute='_compute_instance_url', store=True)
     repository_line = fields.One2many('repository.repo.line', 'instance_id', string='Repository and Branch')
-
     log = fields.Html(string='Log')
     addons_path = fields.Char(string='Addons Path', compute='_compute_addons_path', store=True)
     user_path = fields.Char(string='User Path', compute='_compute_user_path', store=True)
