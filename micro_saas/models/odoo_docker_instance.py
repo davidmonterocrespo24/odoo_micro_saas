@@ -61,7 +61,8 @@ class OdooDockerInstance(models.Model):
             if not instance.name:
                 continue
             instance.user_path = os.path.expanduser('~')
-            instance.instance_data_path = os.path.join(instance.user_path, 'odoo_docker', 'data', instance.name.replace('.', '_').replace(' ', '_').lower())
+            instance.instance_data_path = os.path.join(instance.user_path, 'odoo_docker', 'data',
+                                                       instance.name.replace('.', '_').replace(' ', '_').lower())
             instance.result_dc_body = self._get_formatted_body(demo_fallback=True)
 
     @api.depends('repository_line')
@@ -173,7 +174,7 @@ class OdooDockerInstance(models.Model):
                     self._makedirs(repo_path)
                 try:
                     cmd = f"git clone {line.repository_id.name} -b {line.name} {repo_path}"
-                    subprocess.run(cmd, shell=True, check=True)
+                    self.excute_command(cmd, shell=True, check=True)
                     self.add_to_log(f"[INFO] Repository cloned: {line.repository_id.name} (Branch: {line.name})")
                     line.is_clone = True
                 except Exception as e:
@@ -248,7 +249,7 @@ class OdooDockerInstance(models.Model):
         try:
             # Ejecuta el comando de Docker Compose para levantar la instancia
             cmd = f"docker-compose -f {modified_path} up -d"
-            result = subprocess.run(cmd, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            self.excute_command(cmd, shell=True, check=True)
             self.add_to_log("[INFO] Docker Compose command executed successfully")
             self.write({'state': 'running'})
         except Exception as e:
@@ -269,7 +270,7 @@ class OdooDockerInstance(models.Model):
                 try:
                     # Ejecuta el comando de Docker Compose para detener la instancia
                     cmd = f"docker-compose -f {modified_path} down"
-                    subprocess.run(cmd, shell=True, check=True)
+                    self.excute_command(cmd, shell=True, check=True)
                     # Cambia la propiedad 'state' a 'stopped'
                     instance.write({'state': 'stopped'})
                 except Exception as e:
@@ -285,7 +286,7 @@ class OdooDockerInstance(models.Model):
                 try:
                     # Ejecuta el comando de Docker Compose para detener la instancia
                     cmd = f"docker-compose -f {modified_path} restart"
-                    subprocess.run(cmd, shell=True, check=True)
+                    self.excute_command(cmd, shell=True, check=True)
                     # Cambia la propiedad 'state' a 'stopped'
                     instance.write({'state': 'running'})
                 except Exception as e:
@@ -303,7 +304,7 @@ class OdooDockerInstance(models.Model):
                 try:
                     # Ejecuta el comando de Docker Compose para detener y eliminar los contenedores
                     cmd = f"docker-compose -f {modified_path} down"
-                    subprocess.run(cmd, shell=True, check=True)
+                    self.excute_command(cmd, shell=True, check=True)
                     # Borra los archivos de la instancia
 
                 except Exception as e:
@@ -322,3 +323,10 @@ class OdooDockerInstance(models.Model):
 
         # Luego, elimina el registro del modelo
         return super(OdooDockerInstance, self).unlink()
+
+    def excute_command(self, cmd, shell=True, check=True):
+        try:
+            result = subprocess.run(cmd, shell=shell, check=check, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            return result
+        except Exception as e:
+            raise "Error to execute command: %s" % cmd
