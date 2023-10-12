@@ -131,8 +131,6 @@ class OdooDockerInstance(models.Model):
                 pass
             finally:
                 sock.close()
-
-        # Si no se encuentra ningún puerto disponible en el rango especificado
         self.add_to_log("[ERROR] No se encontraron puertos disponibles en el rango especificado.")
 
     def _update_docker_compose_file(self):
