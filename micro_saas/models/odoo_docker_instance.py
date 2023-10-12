@@ -44,6 +44,11 @@ class OdooDockerInstance(models.Model):
             self.variable_ids = self.template_id.variable_ids
             self.variable_ids.filtered(lambda r: r.name == '{{HTTP-PORT}}').demo_value = self.http_port
             self.variable_ids.filtered(lambda r: r.name == '{{LONGPOLLING-PORT}}').demo_value = self.longpolling_port
+    
+    @api.onchange('http_port', 'longpolling_port')
+    def onchange_http_port(self):
+        self.variable_ids.filtered(lambda r: r.name == '{{HTTP-PORT}}').demo_value = self.http_port
+        self.variable_ids.filtered(lambda r: r.name == '{{LONGPOLLING-PORT}}').demo_value = self.longpolling_port
 
     @api.depends('name')
     def _compute_user_path(self):
