@@ -53,7 +53,7 @@ class OdooDockerInstance(models.Model):
     @api.onchange('name')
     def onchange_name(self):
         self.http_port = self._get_available_port()
-        self.longpolling_port = self._get_available_port(self.http_port + 1)
+        self.longpolling_port = self._get_available_port(int(self.http_port) + 1)
 
     @api.depends('name')
     def _compute_user_path(self):
