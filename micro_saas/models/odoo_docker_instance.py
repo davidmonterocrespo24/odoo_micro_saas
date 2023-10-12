@@ -229,8 +229,9 @@ class OdooDockerInstance(models.Model):
         self.longpolling_port = str(longpolling_port)
         self.add_to_log("[INFO] Port available: " + str(http_port) + " and " + str(longpolling_port))
 
-        self.variable_ids.filtered(lambda r: r.name == '{{HTTP_PORT}}').demo_value = str(http_port)
-        self.variable_ids.filtered(lambda r: r.name == '{{LONGPOLLING_PORT}}').demo_value = str(longpolling_port)
+        self.variable_ids.filtered(lambda r: r.name == '{{HTTP_PORT}}').write({'demo_value': str(http_port)})
+        self.variable_ids.filtered(lambda r: r.name == '{{LONGPOLLING_PORT}}').write(
+            {'demo_value': str(longpolling_port)})
 
         self._update_docker_compose_file()
 
