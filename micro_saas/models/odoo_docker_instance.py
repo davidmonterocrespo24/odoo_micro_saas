@@ -50,6 +50,11 @@ class OdooDockerInstance(models.Model):
         self.variable_ids.filtered(lambda r: r.name == '{{HTTP-PORT}}').demo_value = self.http_port
         self.variable_ids.filtered(lambda r: r.name == '{{LONGPOLLING-PORT}}').demo_value = self.longpolling_port
 
+    @api.onchange('name')
+    def onchange_name(self):
+        self.http_port = self._get_available_port()
+        self.longpolling_port = self._get_available_port(self.http_port + 1)
+
     @api.depends('name')
     def _compute_user_path(self):
         for instance in self:
