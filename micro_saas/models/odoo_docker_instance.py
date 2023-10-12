@@ -101,7 +101,6 @@ class OdooDockerInstance(models.Model):
         self.longpolling_port = self._get_available_port(start_port=int(self.http_port) + 1)
 
 
-
     def _get_available_port(self, start_port=8069, end_port=9000):
         # Define el rango de puertos en el que deseas buscar disponibles
         # buscar todos los puertos de las instancias
