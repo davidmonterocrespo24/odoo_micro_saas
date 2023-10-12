@@ -1,3 +1,4 @@
+from odoo import models, fields, api, _, Command
 import logging
 import re
 from functools import reduce
@@ -5,7 +6,6 @@ from functools import reduce
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
-from odoo import models, fields, api, _, Command
 
 
 # Docker Compose Template Autor David Montero Crespo

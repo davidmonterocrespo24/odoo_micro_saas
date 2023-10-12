@@ -4,11 +4,10 @@ import socket
 import subprocess
 from datetime import datetime
 
+from odoo import models, fields, api
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
-from odoo import models, fields, api
-from odoo.modules.module import get_resource_path
 
 
 class OdooDockerInstance(models.Model):
@@ -21,10 +20,8 @@ class OdooDockerInstance(models.Model):
                              string='State', default='draft')
     http_port = fields.Char(string='HTTP Port')
     longpolling_port = fields.Char(string='Longpolling Port')
-
     instance_url = fields.Char(string='Instance URL', compute='_compute_instance_url', store=True)
     repository_line = fields.One2many('repository.repo.line', 'instance_id', string='Repository and Branch')
-
     log = fields.Html(string='Log')
     addons_path = fields.Char(string='Addons Path', compute='_compute_addons_path', store=True)
     user_path = fields.Char(string='User Path', compute='_compute_user_path', store=True)
@@ -42,8 +39,18 @@ class OdooDockerInstance(models.Model):
             self.repository_line = self.template_id.repository_line
             self.result_dc_body = self._get_formatted_body(demo_fallback=True)
             self.variable_ids = self.template_id.variable_ids
-            self.variable_ids.filtered(lambda r: r.name == 'http_port').demo_value = self.http_port
-            self.variable_ids.filtered(lambda r: r.name == 'longpolling_port').demo_value = self.longpolling_port
+            self.variable_ids.filtered(lambda r: r.name == '{{HTTP-PORT}}').demo_value = self.http_port
+            self.variable_ids.filtered(lambda r: r.name == '{{LONGPOLLING-PORT}}').demo_value = self.longpolling_port
+
+    @api.onchange('http_port', 'longpolling_port')
+    def onchange_http_port(self):
+        self.variable_ids.filtered(lambda r: r.name == '{{HTTP-PORT}}').demo_value = self.http_port
+        self.variable_ids.filtered(lambda r: r.name == '{{LONGPOLLING-PORT}}').demo_value = self.longpolling_port
+
+    @api.onchange('name')
+    def onchange_name(self):
+        self.http_port = self._get_available_port()
+        self.longpolling_port = self._get_available_port(int(self.http_port) + 1)
 
     @api.depends('name')
     def _compute_user_path(self):
@@ -51,7 +58,8 @@ class OdooDockerInstance(models.Model):
             if not instance.name:
                 continue
             instance.user_path = os.path.expanduser('~')
-            instance.instance_data_path = os.path.join(instance.user_path, 'odoo_docker', 'data', instance.name.replace('.', '_').replace(' ', '_').lower())
+            instance.instance_data_path = os.path.join(instance.user_path, 'odoo_docker', 'data',
+                                                       instance.name.replace('.', '_').replace(' ', '_').lower())
             instance.result_dc_body = self._get_formatted_body(demo_fallback=True)
 
     @api.depends('repository_line')
@@ -95,11 +103,6 @@ class OdooDockerInstance(models.Model):
                     'url': url,
                     'target': 'new',
                 }
-    @api.onchange('name')
-    def onchange_find_available_port(self):
-        self.http_port = self._get_available_port()
-        self.longpolling_port = self._get_available_port(start_port=int(self.http_port) + 1)
-
 
     def _get_available_port(self, start_port=8069, end_port=9000):
         # Define el rango de puertos en el que deseas buscar disponibles
@@ -108,8 +111,8 @@ class OdooDockerInstance(models.Model):
         # crear una lista con los puertos de las instancias
         ports = []
         for instance in instances:
-            ports.append(instance.http_port)
-            ports.append(instance.longpolling_port)
+            ports.append(int(instance.http_port))
+            ports.append(int(instance.longpolling_port))
 
         for port in range(start_port, end_port + 1):
             # Si el puerto ya está en uso, continúa con el siguiente
@@ -168,7 +171,7 @@ class OdooDockerInstance(models.Model):
                     self._makedirs(repo_path)
                 try:
                     cmd = f"git clone {line.repository_id.name} -b {line.name} {repo_path}"
-                    subprocess.run(cmd, shell=True, check=True)
+                    self.excute_command(cmd, shell=True, check=True)
                     self.add_to_log(f"[INFO] Repository cloned: {line.repository_id.name} (Branch: {line.name})")
                     line.is_clone = True
                 except Exception as e:
@@ -229,8 +232,6 @@ class OdooDockerInstance(models.Model):
         # if self._is_docker_installed() or self._is_docker_compose_installed():
         #    return False
         self.add_to_log("[INFO] Starting Odoo Instance")
-        self.add_to_log("[INFO] Finding available port")
-
         self._update_docker_compose_file()
 
         # Clonar repositorios y crear odoo.conf
@@ -245,7 +246,7 @@ class OdooDockerInstance(models.Model):
         try:
             # Ejecuta el comando de Docker Compose para levantar la instancia
             cmd = f"docker-compose -f {modified_path} up -d"
-            result = subprocess.run(cmd, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            self.excute_command(cmd, shell=True, check=True)
             self.add_to_log("[INFO] Docker Compose command executed successfully")
             self.write({'state': 'running'})
         except Exception as e:
@@ -266,7 +267,7 @@ class OdooDockerInstance(models.Model):
                 try:
                     # Ejecuta el comando de Docker Compose para detener la instancia
                     cmd = f"docker-compose -f {modified_path} down"
-                    subprocess.run(cmd, shell=True, check=True)
+                    self.excute_command(cmd, shell=True, check=True)
                     # Cambia la propiedad 'state' a 'stopped'
                     instance.write({'state': 'stopped'})
                 except Exception as e:
@@ -282,7 +283,7 @@ class OdooDockerInstance(models.Model):
                 try:
                     # Ejecuta el comando de Docker Compose para detener la instancia
                     cmd = f"docker-compose -f {modified_path} restart"
-                    subprocess.run(cmd, shell=True, check=True)
+                    self.excute_command(cmd, shell=True, check=True)
                     # Cambia la propiedad 'state' a 'stopped'
                     instance.write({'state': 'running'})
                 except Exception as e:
@@ -294,14 +295,13 @@ class OdooDockerInstance(models.Model):
         # Detener y eliminar los contenedores asociados antes de borrar el registro
         for instance in self:
             if instance.state == 'running':
-                self.add_to_log("[INFO] Removing Odoo Instance")
                 # Ruta al archivo docker-compose.yml modificado
                 modified_path = instance.instance_data_path + '/docker-compose.yml'
 
                 try:
                     # Ejecuta el comando de Docker Compose para detener y eliminar los contenedores
                     cmd = f"docker-compose -f {modified_path} down"
-                    subprocess.run(cmd, shell=True, check=True)
+                    self.excute_command(cmd, shell=True, check=True)
                     # Borra los archivos de la instancia
 
                 except Exception as e:
@@ -320,3 +320,10 @@ class OdooDockerInstance(models.Model):
 
         # Luego, elimina el registro del modelo
         return super(OdooDockerInstance, self).unlink()
+
+    def excute_command(self, cmd, shell=True, check=True):
+        try:
+            result = subprocess.run(cmd, shell=shell, check=check, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            return result
+        except Exception as e:
+            raise "Error to execute command: %s" % cmd
