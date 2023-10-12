@@ -95,7 +95,7 @@ class OdooDockerInstance(models.Model):
                     'url': url,
                     'target': 'new',
                 }
-    @api.depends('name')
+    @api.onchange('name')
     def onchange_find_available_port(self):
         self.http_port = self._get_available_port()
         self.longpolling_port = self._get_available_port(start_port=int(self.http_port) + 1)
