@@ -44,7 +44,7 @@ class OdooDockerInstance(models.Model):
             self.variable_ids = self.template_id.variable_ids
             self.variable_ids.filtered(lambda r: r.name == '{{HTTP-PORT}}').demo_value = self.http_port
             self.variable_ids.filtered(lambda r: r.name == '{{LONGPOLLING-PORT}}').demo_value = self.longpolling_port
-    
+
     @api.onchange('http_port', 'longpolling_port')
     def onchange_http_port(self):
         self.variable_ids.filtered(lambda r: r.name == '{{HTTP-PORT}}').demo_value = self.http_port
@@ -108,8 +108,8 @@ class OdooDockerInstance(models.Model):
         # crear una lista con los puertos de las instancias
         ports = []
         for instance in instances:
-            ports.append(instance.http_port)
-            ports.append(instance.longpolling_port)
+            ports.append(int(instance.http_port))
+            ports.append(int(instance.longpolling_port))
 
         for port in range(start_port, end_port + 1):
             # Si el puerto ya está en uso, continúa con el siguiente
@@ -229,16 +229,6 @@ class OdooDockerInstance(models.Model):
         # if self._is_docker_installed() or self._is_docker_compose_installed():
         #    return False
         self.add_to_log("[INFO] Starting Odoo Instance")
-        self.add_to_log("[INFO] Finding available port")
-        http_port = self._get_available_port()
-        longpolling_port = self._get_available_port(start_port=http_port + 1)
-        self.http_port = str(http_port)
-        self.longpolling_port = str(longpolling_port)
-        self.add_to_log("[INFO] Port available: " + str(http_port) + " and " + str(longpolling_port))
-
-        self.variable_ids.filtered(lambda r: r.name == '{{HTTP_PORT}}').demo_value = str(http_port)
-        self.variable_ids.filtered(lambda r: r.name == '{{LONGPOLLING_PORT}}').demo_value = str(longpolling_port)
-
         self._update_docker_compose_file()
 
         # Clonar repositorios y crear odoo.conf
