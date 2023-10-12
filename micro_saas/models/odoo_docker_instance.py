@@ -42,6 +42,8 @@ class OdooDockerInstance(models.Model):
             self.repository_line = self.template_id.repository_line
             self.result_dc_body = self._get_formatted_body(demo_fallback=True)
             self.variable_ids = self.template_id.variable_ids
+            self.variable_ids.filtered(lambda r: r.name == '{{HTTP-PORT}}').demo_value = self.http_port
+            self.variable_ids.filtered(lambda r: r.name == '{{LONGPOLLING-PORT}}').demo_value = self.longpolling_port
 
     @api.depends('name')
     def _compute_user_path(self):
