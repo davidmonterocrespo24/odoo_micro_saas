@@ -45,60 +45,64 @@
                         </page>
                         <page string="Help">
                             <div class="oe_row oe_spaced">
-                            <h1>Installation Guide: Docker, Docker Compose, and Git</h1>
-                            <h2>Docker:</h2>
-                            <ol>
-                                <li>Visit the official Docker website for installation instructions: <a
-                                    href="https://docs.docker.com/get-docker/">Docker Installation Guide</a>.
-                                </li>
-                                <li>Choose the appropriate installation method for your operating system (Windows,
-                                    macOS, or Linux).
-                                </li>
-                                <li>After installation, verify Docker's successful installation by running <code>docker
-                                    --version</code>.
-                                </li>
-                            </ol>
+                                <h1>Installation Guide: Docker, Docker Compose, and Git</h1>
+                                <h2>Docker:</h2>
+                                <ol>
+                                    <li>Visit the official Docker website for installation instructions: <a
+                                        href="https://docs.docker.com/get-docker/">Docker Installation Guide</a>.
+                                    </li>
+                                    <li>Choose the appropriate installation method for your operating system (Windows,
+                                        macOS, or Linux).
+                                    </li>
+                                    <li>After installation, verify Docker's successful installation by running <code>
+                                        docker
+                                        --version</code>.
+                                    </li>
+                                </ol>
 
-                            <h2>Docker Compose:</h2>
-                            <ol>
-                                <li>Docker Compose simplifies the management of multi-container Docker applications. To
-                                    install Docker Compose:
-                                </li>
-                                <li>Follow the official Docker Compose installation guide: <a
-                                    href="https://docs.docker.com/compose/install/">Docker Compose Installation</a>.
-                                </li>
-                                <li>Select the instructions relevant to your operating system.</li>
-                                <li>Confirm the installation by running <code>docker-compose --version</code>.
-                                </li>
-                            </ol>
+                                <h2>Docker Compose:</h2>
+                                <ol>
+                                    <li>Docker Compose simplifies the management of multi-container Docker applications.
+                                        To
+                                        install Docker Compose:
+                                    </li>
+                                    <li>Follow the official Docker Compose installation guide: <a
+                                        href="https://docs.docker.com/compose/install/">Docker Compose Installation</a>.
+                                    </li>
+                                    <li>Select the instructions relevant to your operating system.</li>
+                                    <li>Confirm the installation by running <code>docker-compose --version</code>.
+                                    </li>
+                                </ol>
 
-                            <h2>Git:</h2>
-                            <ol>
-                                <li>Git is a distributed version control system. To install Git:</li>
-                                <li>Visit the Git website and download the appropriate installer for your OS: <a
-                                    href="https://git-scm.com/downloads">Git Downloads</a>.
-                                </li>
-                                <li>Follow the installation instructions provided.</li>
-                                <li>Verify Git's installation by running <code>git --version</code>.
-                                </li>
-                            </ol>
+                                <h2>Git:</h2>
+                                <ol>
+                                    <li>Git is a distributed version control system. To install Git:</li>
+                                    <li>Visit the Git website and download the appropriate installer for your OS: <a
+                                        href="https://git-scm.com/downloads">Git Downloads</a>.
+                                    </li>
+                                    <li>Follow the installation instructions provided.</li>
+                                    <li>Verify Git's installation by running <code>git --version</code>.
+                                    </li>
+                                </ol>
 
-                            <h1>Community Support and Contribution</h1>
-                            <p>We're thrilled to offer this module to the community as a free resource for efficient
-                                Odoo Docker instance management. We welcome contributions, feedback, and suggestions
-                                from the community to enhance and improve this tool further.
-                            </p>
-                            <p>Your support can help us create more features, improve stability, and make it even more
-                                valuable for users worldwide. Please feel free to get involved by reporting issues,
-                                submitting pull requests, or providing feedback on how we can make this module even
-                                better.
-                            </p>
-                            <p>Together, we can make a positive impact on the Odoo community and simplify development
-                                processes for all users. Thank you for your support!
-                            </p>
-                            <p>For more information, please contact us at <a
-                                href="mailto:davidmonterocrespo24@gmail.com"> </a> : davidmonterocrespo24@gmail.com
-                            </p>
+                                <h1>Community Support and Contribution</h1>
+                                <p>We're thrilled to offer this module to the community as a free resource for efficient
+                                    Odoo Docker instance management. We welcome contributions, feedback, and suggestions
+                                    from the community to enhance and improve this tool further.
+                                </p>
+                                <p>Your support can help us create more features, improve stability, and make it even
+                                    more
+                                    valuable for users worldwide. Please feel free to get involved by reporting issues,
+                                    submitting pull requests, or providing feedback on how we can make this module even
+                                    better.
+                                </p>
+                                <p>Together, we can make a positive impact on the Odoo community and simplify
+                                    development
+                                    processes for all users. Thank you for your support!
+                                </p>
+                                <p>For more information, please contact us at <a
+                                    href="mailto:davidmonterocrespo24@gmail.com"></a> : davidmonterocrespo24@gmail.com
+                                </p>
                             </div>
                         </page>
                     </notebook>
@@ -193,8 +197,11 @@
                             </div>
                         </div>
                     </t>
+
                 </templates>
             </kanban>
         </field>
     </record>
+
+
 </odoo>

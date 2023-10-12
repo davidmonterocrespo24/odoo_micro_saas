@@ -22,6 +22,29 @@ The **Micro SaaS - Odoo Docker Instance Management** module is a powerful and fl
 - **Scalability:** Scale vertically by adding new instances as needed, without complications or disruptions to existing projects.
 
 
+##  Docker Compose Templates
+
+- Define Docker Compose templates for Odoo instances.
+- Each template has a name, sequence, and can be associated with tags.
+- Templates include variables that can be customized when creating instances based on the template.
+
+## Template Variables
+- Define variables that can be used in Docker Compose templates.
+- Variables can be of "Free Text" or "Field of Model" types."Field of Model" variables are used to extract values from Odoo records.
+
+## Odoo Docker Instances
+- Represent specific instances of Odoo running in Docker containers.
+- Each instance is created from a defined template.
+- Instances can have names, states (Draft, Stopped, Running, Error), HTTP ports, long polling ports, and more.
+- Multiple templates can be defined, and when creating an instance, you can select an existing template and customize its variables.
+- The instance can clone custom code repositories (e.g., Odoo modules) and configure a specific "odoo.conf" file for it.
+
+## Core Functionality
+- Create Odoo instances based on predefined templates.
+- Customize specific template variables when creating instances.
+- Manage ports to avoid conflicts.
+- Start, stop, and restart Odoo instances through this module.
+- Open the instance's URL in your web browser.
 
 # TODO List
 - [ ] Enhance the output of log messages for better readability and information.
