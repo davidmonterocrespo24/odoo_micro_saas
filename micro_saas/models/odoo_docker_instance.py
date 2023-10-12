@@ -42,6 +42,8 @@ class OdooDockerInstance(models.Model):
             self.repository_line = self.template_id.repository_line
             self.result_dc_body = self._get_formatted_body(demo_fallback=True)
             self.variable_ids = self.template_id.variable_ids
+            self.variable_ids.filtered(lambda r: r.name == 'http_port').demo_value = self.http_port
+            self.variable_ids.filtered(lambda r: r.name == 'longpolling_port').demo_value = self.longpolling_port
 
     @api.depends('name')
     def _compute_user_path(self):
@@ -93,6 +95,12 @@ class OdooDockerInstance(models.Model):
                     'url': url,
                     'target': 'new',
                 }
+    @api.depends('name')
+    def onchange_find_available_port(self):
+        self.http_port = self._get_available_port()
+        self.longpolling_port = self._get_available_port(start_port=int(self.http_port) + 1)
+
+
 
     def _get_available_port(self, start_port=8069, end_port=9000):
         # Define el rango de puertos en el que deseas buscar disponibles
@@ -223,15 +231,6 @@ class OdooDockerInstance(models.Model):
         #    return False
         self.add_to_log("[INFO] Starting Odoo Instance")
         self.add_to_log("[INFO] Finding available port")
-        http_port = self._get_available_port()
-        longpolling_port = self._get_available_port(start_port=http_port + 1)
-        self.http_port = str(http_port)
-        self.longpolling_port = str(longpolling_port)
-        self.add_to_log("[INFO] Port available: " + str(http_port) + " and " + str(longpolling_port))
-
-        self.variable_ids.filtered(lambda r: r.name == '{{HTTP_PORT}}').write({'demo_value': str(http_port)})
-        self.variable_ids.filtered(lambda r: r.name == '{{LONGPOLLING_PORT}}').write(
-            {'demo_value': str(longpolling_port)})
 
         self._update_docker_compose_file()
 
