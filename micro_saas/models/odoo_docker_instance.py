@@ -8,7 +8,6 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 from odoo import models, fields, api
-from odoo.modules.module import get_resource_path
 
 
 class OdooDockerInstance(models.Model):
