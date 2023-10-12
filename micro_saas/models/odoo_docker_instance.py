@@ -1,14 +1,13 @@
-from odoo import models, fields, api
 import logging
 import os
 import socket
 import subprocess
 from datetime import datetime
 
+from odoo import models, fields, api
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
-
 
 
 class OdooDockerInstance(models.Model):
