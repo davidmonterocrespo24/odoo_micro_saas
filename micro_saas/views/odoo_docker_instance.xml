@@ -8,7 +8,7 @@
             <form string="Odoo Docker Instance">
                 <header>
                     <button string="Start Instance" type="object" name="start_instance"
-                            class="oe_highlight o_button_icon o_icon_play" states="draft,error"/>
+                            class="oe_highlight o_button_icon o_icon_play" states="draft,error,stopped"/>
                     <button string="Stop Instance" type="object" name="stop_instance" states="running"
                             class="o_button_icon o_icon_stop"/>
                     <button string="Restart Instance" type="object" name="restart_instance" states="running"
