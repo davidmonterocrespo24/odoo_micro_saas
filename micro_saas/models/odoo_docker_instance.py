@@ -212,7 +212,10 @@ class OdooDockerInstance(models.Model):
             # Imprimir el stderr para obtener más detalles
             cmd = f"docker-compose -f {modified_path} up -d"
             self.add_to_log("[ERROR] Error to execute docker-compose command %s" % cmd)
-            self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8'))
+            if hasattr(e, 'stderr') and e.stderr:
+                self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8'))
+            else:
+                self.add_to_log("[ERROR]  " + str(e))
             self.write({'state': 'error'})
 
     def stop_instance(self):
