@@ -104,6 +104,79 @@
 
     </div>
 </section>
+
+
+<section class="oe_container oe_mt32">
+    <div class="oe_row oe_spaced">
+        <h3>Screenshots</h3>
+        <div class="oe_span12">
+            <div class="oe_demo oe_picture oe_screenshot">
+                <img class='img-responsive' src="0.jpg">
+            </div>
+        </div>
+        <div class="oe_span12">
+            <div class="oe_demo oe_picture oe_screenshot">
+                <img class='img-responsive' src="1.jpg">
+            </div>
+        </div>
+        <div class="oe_span12">
+            <div class="oe_demo oe_picture oe_screenshot">
+                <img class='img-responsive' src="2.jpg">
+            </div>
+        </div>
+        <div class="oe_span12">
+            <div class="oe_demo oe_picture oe_screenshot">
+                <img class='img-responsive' src="3.jpg">
+            </div>
+        </div>
+
+
+        <h3>New Functionality</h3>
+        <h5>Docker Compose Template</h5>
+        <p>Define templates for Odoo instances running in Docker containers.</p>
+        <ul>
+            <li>Each template has a name, sequence, and can be associated with tags.</li>
+            <li>Templates include variables that can be customized when creating instances based on the template.</li>
+        </ul>
+
+        <h5>Docker Compose Template Variable</h5>
+        <p>Define variables that can be used in Docker Compose templates.</p>
+        <ul>
+            <li>Variables can be of "Free Text" or "Field of Model" types.</li>
+            <li>"Field of Model" variables are used to extract values from Odoo records.</li>
+        </ul>
+
+        <h5>Odoo Docker Instance</h5>
+        <p>Represents specific instances of Odoo running in Docker containers.</p>
+        <ul>
+            <li>Each instance is created from a defined template.</li>
+            <li>Instances can have names, states (Draft, Stopped, Running, Error), HTTP ports, long polling ports, and
+                more.
+            </li>
+            <li>Multiple templates can be defined, and when creating an instance, you can select an existing template
+                and customize its variables.
+            </li>
+            <li>The instance can clone custom code repositories (e.g., Odoo modules) and configure a specific
+                "odoo.conf" file for it.
+            </li>
+        </ul>
+        <div class="oe_span12">
+            <div class="oe_demo oe_picture oe_screenshot">
+                <img class='img-responsive' src="5.jpg">
+            </div>
+        </div>
+        <div class="oe_span12">
+            <div class="oe_demo oe_picture oe_screenshot">
+                <img class='img-responsive' src="6.jpg">
+            </div>
+        </div>
+        <div class="oe_span12">
+            <div class="oe_demo oe_picture oe_screenshot">
+                <img class='img-responsive' src="7.jpg">
+            </div>
+        </div>
+    </div>
+</section>
 <br/>
 <br/>
 <br/>
@@ -113,7 +186,8 @@
         <h2>Docker:</h2>
         <ol>
             <li>Visit the official Docker website for installation instructions: <a
-                    href="https://docs.docker.com/get-docker/">Docker Installation Guide: https://docs.docker.com/get-docker/</a>.
+                    href="https://docs.docker.com/get-docker/">Docker Installation Guide:
+                https://docs.docker.com/get-docker/</a>.
             </li>
             <li>Choose the appropriate installation method for your operating system (Windows, macOS, or Linux).</li>
             <li>After installation, verify Docker's successful installation by running <code>docker --version</code>.
@@ -126,7 +200,8 @@
                 Compose:
             </li>
             <li>Follow the official Docker Compose installation guide: <a
-                    href="https://docs.docker.com/compose/install/">Docker Compose Installation: https://docs.docker.com/compose/install</a>.
+                    href="https://docs.docker.com/compose/install/">Docker Compose Installation:
+                https://docs.docker.com/compose/install</a>.
             </li>
             <li>Select the instructions relevant to your operating system.</li>
             <li>Confirm the installation by running <code>docker-compose --version</code>.</li>
@@ -153,67 +228,71 @@
             users. Thank you for your support!</p>
         <p>For more information, please contact us at <a href="mailto:davidmonterocrespo24@gmail.com" target="_blank">davidmonterocrespo24@gmail.com</a>
         </p>
-        <p>GitHub Repository: <a href="https://github.com/davidmonterocrespo24/odoo_micro_saas" target="_blank">https://github.com/davidmonterocrespo24/odoo_micro_saas</a></p>
+        <p>GitHub Repository: <a href="https://github.com/davidmonterocrespo24/odoo_micro_saas" target="_blank">https://github.com/davidmonterocrespo24/odoo_micro_saas</a>
+        </p>
 
-        <div class="oe_span12">
-            <div class="oe_demo oe_picture oe_screenshot">
-                <img class='img-responsive' src="0.jpg">
-            </div>
-        </div>
-        <div class="oe_span12">
-            <div class="oe_demo oe_picture oe_screenshot">
-                <img class='img-responsive' src="1.jpg">
-            </div>
-        </div>
-        <div class="oe_span12">
-            <div class="oe_demo oe_picture oe_screenshot">
-                <img class='img-responsive' src="2.jpg">
-            </div>
-        </div>
-        <div class="oe_span12">
-            <div class="oe_demo oe_picture oe_screenshot">
-                <img class='img-responsive' src="3.jpg">
-            </div>
-        </div>
+        <h1>Recommended Odoo Installation Script</h1>
+        <a src="https://github.com/Yenthe666/InstallScript">https://github.com/Yenthe666/InstallScript</a>
+        <p>This script is based on the install script created by <a
+                href="https://github.com/aschenkels-ictstudio/openerp-install-scripts">André Schenkels</a> but goes a
+            bit further and has been improved. It simplifies the installation of Odoo and provides additional
+            configuration options.</p>
+
+        <h2>Installing Nginx</h2>
+        <p>If you set the parameter <code>INSTALL_NGINX</code> to True, you should also configure workers. Without
+            workers, you may encounter connection loss issues. Refer to the deployment guide from Odoo on how to
+            configure workers.</p>
+
+        <h2>Installation Procedure</h2>
+        <ol>
+            <li>Download the script:</li>
+            <pre><code>sudo wget https://raw.githubusercontent.com/Yenthe666/InstallScript/16.0/odoo_install.sh</code></pre>
+            <li>Modify the parameters as you wish. Here are some commonly used options:</li>
+            <ul>
+                <li><code>OE_USER</code>: The system user's username.</li>
+                <li><code>GENERATE_RANDOM_PASSWORD</code>: Set to True to generate a random password, or set to False to
+                    use the password configured in <code>OE_SUPERADMIN</code>.
+                </li>
+                <li><code>INSTALL_WKHTMLTOPDF</code>: Set to False if you don't want to install Wkhtmltopdf, or True if
+                    you want to install it.
+                </li>
+                <li><code>OE_PORT</code>: The port on which Odoo should run, e.g., 8069.</li>
+                <li><code>OE_VERSION</code>: The Odoo version to install, e.g., 16.0 for Odoo V16.</li>
+                <li><code>IS_ENTERPRISE</code>: Set to True to install the Enterprise version on top of 16.0, or False
+                    for the community version.
+                </li>
+                <li><code>OE_SUPERADMIN</code>: The master password for this Odoo installation.</li>
+                <li><code>INSTALL_NGINX</code>: Set to False by default. Set to True to install Nginx.</li>
+                <li><code>WEBSITE_NAME</code>: Set the website name here for Nginx configuration.</li>
+                <li><code>ENABLE_SSL</code>: Set to True to install certbot and configure Nginx with HTTPS using a free
+                    Let's Encrypted certificate.
+                </li>
+                <li><code>ADMIN_EMAIL</code>: Email needed for Let's Encrypt registration. Replace the default
+                    placeholder with your organization's email.
+                </li>
+            </ul>
+            <p>Note: To enable SSL through Let's Encrypt, you agree to certain policies.</p>
+            <li>Make the script executable:</li>
+            <pre><code>sudo chmod +x odoo_install.sh</code></pre>
+            <li>Execute the script:</li>
+            <pre><code>sudo ./odoo_install.sh</code></pre>
+        </ol>
+
+        <h2>Where to Host Odoo</h2>
+        <p>There are plenty of great services that offer reliable hosting for Odoo. This script has been tested with
+            major providers such as Google Cloud, Hetzner, Amazon AWS, and DigitalOcean. You can use <a
+                    href="https://www.digitalocean.com/">DigitalOcean</a> with my referral link to get a $200 voucher
+            for free for the first 60 days.</p>
+
+        <h2>Minimal Server Requirements</h2>
+        <p>While it's technically possible to run Odoo on a server with 1GB of RAM, it's not advised. A Linux instance
+            typically uses 300MB-500MB, and the rest needs to be split among Odoo, PostgreSQL, and other services. To
+            run Odoo smoothly, it's recommended to use at least 2GB of RAM. This script might fail with fewer resources.
+            There are known issues on DigitalOcean where the installation crashes on 1GB RAM machines. See <a
+                    href="https://github.com/Yenthe666/InstallScript/issues/243">#243</a>.</p>
+
     </div>
 </section>
 <br/>
 <br/>
 
-<section class="oe_container oe_mt32">
-    <div class="oe_row oe_spaced">
-    <h3 >New Functionality</h3>
-    <h5>Docker Compose Template</h5>
-    <p>Define templates for Odoo instances running in Docker containers.</p>
-    <ul>
-        <li>Each template has a name, sequence, and can be associated with tags.</li>
-        <li>Templates include variables that can be customized when creating instances based on the template.</li>
-    </ul>
-
-    <h5>Docker Compose Template Variable</h5>
-    <p>Define variables that can be used in Docker Compose templates.</p>
-    <ul>
-        <li>Variables can be of "Free Text" or "Field of Model" types.</li>
-        <li>"Field of Model" variables are used to extract values from Odoo records.</li>
-    </ul>
-
-    <h5>Odoo Docker Instance</h5>
-    <p>Represents specific instances of Odoo running in Docker containers.</p>
-    <ul>
-        <li>Each instance is created from a defined template.</li>
-        <li>Instances can have names, states (Draft, Stopped, Running, Error), HTTP ports, long polling ports, and more.</li>
-        <li>Multiple templates can be defined, and when creating an instance, you can select an existing template and customize its variables.</li>
-        <li>The instance can clone custom code repositories (e.g., Odoo modules) and configure a specific "odoo.conf" file for it.</li>
-    </ul>
- <div class="oe_span12">
-            <div class="oe_demo oe_picture oe_screenshot">
-                <img class='img-responsive' src="5.jpg">
-            </div>
-        </div>
-        <div class="oe_span12">
-            <div class="oe_demo oe_picture oe_screenshot">
-                <img class='img-responsive' src="6.jpg">
-            </div>
-        </div>
-    </div>
-</section>
