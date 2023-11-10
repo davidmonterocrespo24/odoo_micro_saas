@@ -1,8 +1,8 @@
-from odoo import models, fields, api, _, Command
 import logging
 import re
 from functools import reduce
 
+from odoo import models, fields, api, _, Command
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -32,7 +32,12 @@ class DockerComposeTemplate(models.Model):
     result_odoo_conf = fields.Text(string="Result Odoo Conf", compute='_compute_result_odoo_conf', store=True)
     template_odoo_conf = fields.Text(string="Template Odoo Conf")
     template_postgres_conf = fields.Text(string="Template Postgres Conf")
-    result_postgres_conf = fields.Text(string="Result Postgres Conf", compute='_compute_result_postgres_conf', store=True)
+    result_postgres_conf = fields.Text(string="Result Postgres Conf", compute='_compute_result_postgres_conf',
+                                       store=True)
+
+    is_result_odoo_conf = fields.Boolean(string="Result Odoo Conf")
+    is_result_postgres_conf = fields.Boolean(string="Result Postgres Conf")
+    is_result_dc_body = fields.Boolean(string="Result Docker Compose")
 
     @api.depends('template_dc_body')
     def _compute_variable_ids(self):
@@ -61,7 +66,6 @@ class DockerComposeTemplate(models.Model):
         for template in self:
             template.result_dc_body = template._get_formatted_body(demo_fallback=True)
 
-
     @api.depends('template_odoo_conf', 'variable_ids')
     def _compute_result_odoo_conf(self):
         for template in self:
@@ -71,7 +75,6 @@ class DockerComposeTemplate(models.Model):
     def _compute_result_postgres_conf(self):
         for template in self:
             template.result_postgres_conf = template._get_formatted_body(demo_fallback=True)
-
 
     @api.model_create_multi
     def create(self, vals_list):

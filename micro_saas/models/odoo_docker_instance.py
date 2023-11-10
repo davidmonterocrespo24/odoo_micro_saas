@@ -36,7 +36,6 @@ class OdooDockerInstance(models.Model):
     result_postgres_conf = fields.Text(string="Result Postgres Conf", compute='_compute_result_postgres_conf',
                                        store=True)
 
-    #Crear una variable booleana pra ver el result_odoo_conf o el template_odoo_conf
     is_result_odoo_conf = fields.Boolean(string="Result Odoo Conf")
     is_result_postgres_conf = fields.Boolean(string="Result Postgres Conf")
     is_result_dc_body = fields.Boolean(string="Result Docker Compose")
