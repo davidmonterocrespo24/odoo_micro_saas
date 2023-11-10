@@ -18,6 +18,13 @@ class DockerComposeTemplate(models.Model):
         ('name_uniq', 'unique (name)', 'The name of the template must be unique !'),
     ]
 
+    def _default_template_odoo_conf(self):
+        odoo_conf_content = f"[options]\naddons_path =/mnt/extra-addons/ \n"
+        odoo_conf_content += "admin_passwd = admin\n"
+        odoo_conf_content += "data_dir = /var/lib/odoo\n"
+        odoo_conf_content += "logfile = /var/log/odoo/odoo.log\n"
+        return odoo_conf_content
+
     name = fields.Char(string="Name", required=True)
     sequence = fields.Integer(required=True, default=0)
     active = fields.Boolean(default=True)
@@ -30,7 +37,7 @@ class DockerComposeTemplate(models.Model):
     template_dc_body = fields.Text(string="Template Docker Compose")
     repository_line = fields.One2many('repository.repo.line', 'instance_id', string='Repository and Branch')
     result_odoo_conf = fields.Text(string="Result Odoo Conf", compute='_compute_result_odoo_conf', store=True)
-    template_odoo_conf = fields.Text(string="Template Odoo Conf", default='_default_template_odoo_conf')
+    template_odoo_conf = fields.Text(string="Template Odoo Conf", default=_default_template_odoo_conf)
     template_postgres_conf = fields.Text(string="Template Postgres Conf")
     result_postgres_conf = fields.Text(string="Result Postgres Conf", compute='_compute_result_postgres_conf',
                                        store=True)
@@ -38,13 +45,6 @@ class DockerComposeTemplate(models.Model):
     is_result_odoo_conf = fields.Boolean(string="Result Odoo Conf")
     is_result_postgres_conf = fields.Boolean(string="Result Postgres Conf")
     is_result_dc_body = fields.Boolean(string="Result Docker Compose")
-
-    def _default_template_odoo_conf(self):
-        odoo_conf_content = f"[options]\naddons_path =/mnt/extra-addons/ \n"
-        odoo_conf_content += "admin_passwd = admin\n"
-        odoo_conf_content += "data_dir = /var/lib/odoo\n"
-        odoo_conf_content += "logfile = /var/log/odoo/odoo.log\n"
-        return odoo_conf_content
 
     @api.depends('template_dc_body')
     def _compute_variable_ids(self):
