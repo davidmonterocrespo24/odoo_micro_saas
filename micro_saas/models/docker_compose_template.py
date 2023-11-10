@@ -71,19 +71,19 @@ class DockerComposeTemplate(models.Model):
     @api.depends('template_dc_body', 'variable_ids')
     def _compute_result_dc_body(self):
         for template in self:
-            template.result_dc_body = template._get_formatted_body(template_body=template.result_dc_body,
+            template.result_dc_body = template._get_formatted_body(template_body=template.template_dc_body,
                                                                    demo_fallback=True)
 
     @api.depends('template_odoo_conf', 'variable_ids')
     def _compute_result_odoo_conf(self):
         for template in self:
-            template.result_odoo_conf = template._get_formatted_body(template_body=template.result_odoo_conf,
+            template.result_odoo_conf = template._get_formatted_body(template_body=template.template_odoo_conf,
                                                                      demo_fallback=True)
 
     @api.depends('template_postgres_conf', 'variable_ids')
     def _compute_result_postgres_conf(self):
         for template in self:
-            template.result_postgres_conf = template._get_formatted_body(template_body=template.result_postgres_conf,
+            template.result_postgres_conf = template._get_formatted_body(template_body=template.template_postgres_conf,
                                                                          demo_fallback=True)
 
     @api.model_create_multi
@@ -109,8 +109,8 @@ class DockerComposeTemplate(models.Model):
         variable_values = variable_values or {}
         for var in self.variable_ids:
             fallback_value = var.demo_value if demo_fallback else ' '
-            template_body = template_body.replace(var.name, variable_values.get(var.name, fallback_value))
-        return template_body
+            result_body = template_body.replace(var.name, variable_values.get(var.name, fallback_value))
+        return result_body
 
     def create_instance_from_template(self):
         self.ensure_one()

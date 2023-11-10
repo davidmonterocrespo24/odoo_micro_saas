@@ -36,7 +36,7 @@ class OdooDockerInstance(models.Model):
             self.template_dc_body = self.template_id.template_dc_body
             self.tag_ids = self.template_id.tag_ids
             self.repository_line = self.template_id.repository_line
-            self.result_dc_body = self._get_formatted_body(template_body=self.result_dc_body,demo_fallback=True)
+            self.result_dc_body = self._get_formatted_body(template_body=self.template_dc_body,demo_fallback=True)
             self.variable_ids = self.template_id.variable_ids
             self.variable_ids.filtered(lambda r: r.name == '{{HTTP-PORT}}').demo_value = self.http_port
             self.variable_ids.filtered(lambda r: r.name == '{{LONGPOLLING-PORT}}').demo_value = self.longpolling_port
@@ -59,7 +59,7 @@ class OdooDockerInstance(models.Model):
             instance.user_path = os.path.expanduser('~')
             instance.instance_data_path = os.path.join(instance.user_path, 'odoo_docker', 'data',
                                                        instance.name.replace('.', '_').replace(' ', '_').lower())
-            instance.result_dc_body = self._get_formatted_body(template_body=instance.result_dc_body,demo_fallback=True)
+            instance.result_dc_body = self._get_formatted_body(template_body=instance.template_dc_body,demo_fallback=True)
 
     @api.depends('repository_line')
     def _compute_addons_path(self):
