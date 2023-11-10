@@ -53,6 +53,10 @@ class DockerComposeTemplate(models.Model):
             to_delete = []
             to_create = []
             body_variables = set(re.findall(r'{{[^{}]+}}', tmpl.template_dc_body or ''))
+            #sumar las variables de template_odoo_conf
+            body_variables = body_variables.union(set(re.findall(r'{{[^{}]+}}', tmpl.template_odoo_conf or '')))
+            #sumar las variables de template_postgres_conf
+            body_variables = body_variables.union(set(re.findall(r'{{[^{}]+}}', tmpl.template_postgres_conf or '')))
             existing_body_variables = tmpl.variable_ids
             existing_body_variables = {var.name: var for var in existing_body_variables}
             new_body_variable_names = [var_name for var_name in body_variables if
