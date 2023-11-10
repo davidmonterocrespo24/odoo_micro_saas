@@ -30,7 +30,7 @@ class DockerComposeTemplate(models.Model):
     template_dc_body = fields.Text(string="Template Docker Compose")
     repository_line = fields.One2many('repository.repo.line', 'instance_id', string='Repository and Branch')
     result_odoo_conf = fields.Text(string="Result Odoo Conf", compute='_compute_result_odoo_conf', store=True)
-    template_odoo_conf = fields.Text(string="Template Odoo Conf" , default=_default_template_odoo_conf)
+    template_odoo_conf = fields.Text(string="Template Odoo Conf" , default='_default_template_odoo_conf')
     template_postgres_conf = fields.Text(string="Template Postgres Conf")
     result_postgres_conf = fields.Text(string="Result Postgres Conf", compute='_compute_result_postgres_conf',
                                        store=True)
