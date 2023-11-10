@@ -30,6 +30,17 @@ class OdooDockerInstance(models.Model):
                                    string="Template Variables", store=True, compute='_compute_variable_ids',
                                    precompute=True, readonly=False)
 
+    result_odoo_conf = fields.Text(string="Result Odoo Conf", compute='_compute_result_odoo_conf', store=True)
+    template_odoo_conf = fields.Text(string="Template Odoo Conf")
+    template_postgres_conf = fields.Text(string="Template Postgres Conf")
+    result_postgres_conf = fields.Text(string="Result Postgres Conf", compute='_compute_result_postgres_conf',
+                                       store=True)
+
+    is_result_odoo_conf = fields.Boolean(string="Result Odoo Conf")
+    is_result_postgres_conf = fields.Boolean(string="Result Postgres Conf")
+    is_result_dc_body = fields.Boolean(string="Result Docker Compose")
+
+
     @api.onchange('template_id')
     def onchange_template_id(self):
         if self.template_id:
@@ -60,6 +71,16 @@ class OdooDockerInstance(models.Model):
             instance.instance_data_path = os.path.join(instance.user_path, 'odoo_docker', 'data',
                                                        instance.name.replace('.', '_').replace(' ', '_').lower())
             instance.result_dc_body = self._get_formatted_body(demo_fallback=True)
+
+    @api.depends('template_odoo_conf', 'variable_ids')
+    def _compute_result_odoo_conf(self):
+        for template in self:
+            template.result_odoo_conf = template._get_formatted_body(demo_fallback=True)
+
+    @api.depends('template_postgres_conf', 'variable_ids')
+    def _compute_result_postgres_conf(self):
+        for template in self:
+            template.result_postgres_conf = template._get_formatted_body(demo_fallback=True)
 
     @api.depends('repository_line')
     def _compute_addons_path(self):
@@ -135,7 +156,6 @@ class OdooDockerInstance(models.Model):
         modified_path = os.path.join(self.instance_data_path, 'docker-compose.yml')
         self.create_file(modified_path, self.result_dc_body)
 
-
     def _get_repo_name(self, line):
         if not line.repository_id or not line.name or not line.repository_id.name:
             return ''
@@ -143,8 +163,6 @@ class OdooDockerInstance(models.Model):
         name = name_repo_url.replace('.git', '').replace('.', '_').replace('-', '_').replace(' ', '_').replace(
             '/', '_').replace('\\', '_') + "_branch_" + line.name.replace('.', '_')
         return name
-
-
 
     def _clone_repositories(self):
         for instance in self:
@@ -168,24 +186,26 @@ class OdooDockerInstance(models.Model):
 
     def _create_odoo_conf(self):
         for instance in self:
-            odoo_conf_path = os.path.join(self.instance_data_path, "etc", 'odoo.conf')
-            self._makedirs(os.path.dirname(odoo_conf_path))
+            odoo_conf_path = os.path.join(instance.instance_data_path, "etc", 'odoo.conf')
+            instance._makedirs(os.path.dirname(odoo_conf_path))
             addons_path = instance.addons_path
             try:
-                odoo_conf_content = f"[options]\naddons_path = {addons_path}\n"
-                odoo_conf_content += "admin_passwd = admin\n"
-                odoo_conf_content += "data_dir = /var/lib/odoo\n"
-                odoo_conf_content += "logfile = /var/log/odoo/odoo.log\n"
-                self.create_file(odoo_conf_path, odoo_conf_content)
-                self.add_to_log(f"[INFO] Archivo odoo.conf creado exitosamente en {odoo_conf_path}")
+                odoo_conf_content = instance.result_odoo_conf
+                if not odoo_conf_content:
+                    odoo_conf_content = f"[options]\naddons_path = {addons_path}\n"
+                    odoo_conf_content += "admin_passwd = admin\n"
+                    odoo_conf_content += "data_dir = /var/lib/odoo\n"
+                    odoo_conf_content += "logfile = /var/log/odoo/odoo.log\n"
+                instance.create_file(odoo_conf_path, odoo_conf_content)
+                instance.add_to_log(f"[INFO] Archivo odoo.conf creado exitosamente en {odoo_conf_path}")
             except Exception as e:
-                self.add_to_log(f"[ERROR] Error al crear el archivo odoo.conf en {odoo_conf_path}")
-                self.write({'state': 'error'})
+                instance.add_to_log(f"[ERROR] Error al crear el archivo odoo.conf en {odoo_conf_path}")
+                instance.write({'state': 'error'})
                 if hasattr(e, 'stderr') and e.stderr:
-                    self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8'))
+                    instance.add_to_log("[ERROR]  " + e.stderr.decode('utf-8'))
                 else:
-                    self.add_to_log("[ERROR]  " + str(e))
-                self.write({'state': 'stopped'})
+                    instance.add_to_log("[ERROR]  " + str(e))
+                instance.write({'state': 'stopped'})
 
     def start_instance(self):
         # Obtén un puerto disponible
@@ -283,6 +303,8 @@ class OdooDockerInstance(models.Model):
             return result
         except Exception as e:
             self.add_to_log(f"Error to execute command: {str(e)}")
+            self.add_to_log("**** Execute the following command manually from the terminal for more details ****")
+            self.add_to_log("**** " + cmd + " ****")
 
     def _makedirs(self, path):
         try:
@@ -291,7 +313,7 @@ class OdooDockerInstance(models.Model):
         except Exception as e:
             self.add_to_log(f"Error while creating directory {path} : {str(e)}")
 
-    def create_file(self,modified_path,result_dc_body):
+    def create_file(self, modified_path, result_dc_body):
         try:
             with open(modified_path, "w") as modified_file:
                 modified_file.write(result_dc_body)
