@@ -30,7 +30,7 @@ class DockerComposeTemplate(models.Model):
     template_dc_body = fields.Text(string="Template Docker Compose")
     repository_line = fields.One2many('repository.repo.line', 'instance_id', string='Repository and Branch')
     result_odoo_conf = fields.Text(string="Result Odoo Conf", compute='_compute_result_odoo_conf', store=True)
-    template_odoo_conf = fields.Text(string="Template Odoo Conf" , default='_default_template_odoo_conf')
+    template_odoo_conf = fields.Text(string="Template Odoo Conf", default='_default_template_odoo_conf')
     template_postgres_conf = fields.Text(string="Template Postgres Conf")
     result_postgres_conf = fields.Text(string="Result Postgres Conf", compute='_compute_result_postgres_conf',
                                        store=True)
@@ -71,17 +71,20 @@ class DockerComposeTemplate(models.Model):
     @api.depends('template_dc_body', 'variable_ids')
     def _compute_result_dc_body(self):
         for template in self:
-            template.result_dc_body = template._get_formatted_body(template_body=template.result_dc_body,demo_fallback=True)
+            template.result_dc_body = template._get_formatted_body(template_body=template.result_dc_body,
+                                                                   demo_fallback=True)
 
     @api.depends('template_odoo_conf', 'variable_ids')
     def _compute_result_odoo_conf(self):
         for template in self:
-            template.result_odoo_conf = template._get_formatted_body(template_body=template.result_odoo_conf,demo_fallback=True)
+            template.result_odoo_conf = template._get_formatted_body(template_body=template.result_odoo_conf,
+                                                                     demo_fallback=True)
 
     @api.depends('template_postgres_conf', 'variable_ids')
     def _compute_result_postgres_conf(self):
         for template in self:
-            template.result_postgres_conf = template._get_formatted_body(template_body=template.result_postgres_conf,demo_fallback=True)
+            template.result_postgres_conf = template._get_formatted_body(template_body=template.result_postgres_conf,
+                                                                         demo_fallback=True)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -101,7 +104,7 @@ class DockerComposeTemplate(models.Model):
             default['name'] = _('%(original_name)s (copy)', original_name=self.name)
         return super().copy(default)
 
-    def _get_formatted_body(self, template_body='',demo_fallback=False, variable_values=None):
+    def _get_formatted_body(self, template_body='', demo_fallback=False, variable_values=None):
         self.ensure_one()
         variable_values = variable_values or {}
         for var in self.variable_ids:
