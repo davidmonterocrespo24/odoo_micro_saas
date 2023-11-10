@@ -46,7 +46,7 @@ class DockerComposeTemplate(models.Model):
     is_result_postgres_conf = fields.Boolean(string="Result Postgres Conf")
     is_result_dc_body = fields.Boolean(string="Result Docker Compose")
 
-    @api.depends('template_dc_body')
+    @api.depends('template_dc_body', 'template_odoo_conf', 'template_postgres_conf')
     def _compute_variable_ids(self):
         """compute template variable according to header text, body and buttons"""
         for tmpl in self:
