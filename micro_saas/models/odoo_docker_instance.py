@@ -30,24 +30,13 @@ class OdooDockerInstance(models.Model):
                                    string="Template Variables", store=True, compute='_compute_variable_ids',
                                    precompute=True, readonly=False)
 
-    result_odoo_conf = fields.Text(string="Result Odoo Conf", compute='_compute_result_odoo_conf', store=True)
-    template_odoo_conf = fields.Text(string="Template Odoo Conf")
-    template_postgres_conf = fields.Text(string="Template Postgres Conf")
-    result_postgres_conf = fields.Text(string="Result Postgres Conf", compute='_compute_result_postgres_conf',
-                                       store=True)
-
-    is_result_odoo_conf = fields.Boolean(string="Result Odoo Conf")
-    is_result_postgres_conf = fields.Boolean(string="Result Postgres Conf")
-    is_result_dc_body = fields.Boolean(string="Result Docker Compose")
-
-
     @api.onchange('template_id')
     def onchange_template_id(self):
         if self.template_id:
             self.template_dc_body = self.template_id.template_dc_body
             self.tag_ids = self.template_id.tag_ids
             self.repository_line = self.template_id.repository_line
-            self.result_dc_body = self._get_formatted_body(demo_fallback=True)
+            self.result_dc_body = self._get_formatted_body(template_body=self.result_dc_body,demo_fallback=True)
             self.variable_ids = self.template_id.variable_ids
             self.variable_ids.filtered(lambda r: r.name == '{{HTTP-PORT}}').demo_value = self.http_port
             self.variable_ids.filtered(lambda r: r.name == '{{LONGPOLLING-PORT}}').demo_value = self.longpolling_port
@@ -70,17 +59,7 @@ class OdooDockerInstance(models.Model):
             instance.user_path = os.path.expanduser('~')
             instance.instance_data_path = os.path.join(instance.user_path, 'odoo_docker', 'data',
                                                        instance.name.replace('.', '_').replace(' ', '_').lower())
-            instance.result_dc_body = self._get_formatted_body(demo_fallback=True)
-
-    @api.depends('template_odoo_conf', 'variable_ids')
-    def _compute_result_odoo_conf(self):
-        for template in self:
-            template.result_odoo_conf = template._get_formatted_body(demo_fallback=True)
-
-    @api.depends('template_postgres_conf', 'variable_ids')
-    def _compute_result_postgres_conf(self):
-        for template in self:
-            template.result_postgres_conf = template._get_formatted_body(demo_fallback=True)
+            instance.result_dc_body = self._get_formatted_body(template_body=instance.result_dc_body,demo_fallback=True)
 
     @api.depends('repository_line')
     def _compute_addons_path(self):
@@ -188,14 +167,8 @@ class OdooDockerInstance(models.Model):
         for instance in self:
             odoo_conf_path = os.path.join(instance.instance_data_path, "etc", 'odoo.conf')
             instance._makedirs(os.path.dirname(odoo_conf_path))
-            addons_path = instance.addons_path
             try:
                 odoo_conf_content = instance.result_odoo_conf
-                if not odoo_conf_content:
-                    odoo_conf_content = f"[options]\naddons_path = {addons_path}\n"
-                    odoo_conf_content += "admin_passwd = admin\n"
-                    odoo_conf_content += "data_dir = /var/lib/odoo\n"
-                    odoo_conf_content += "logfile = /var/log/odoo/odoo.log\n"
                 instance.create_file(odoo_conf_path, odoo_conf_content)
                 instance.add_to_log(f"[INFO] Archivo odoo.conf creado exitosamente en {odoo_conf_path}")
             except Exception as e:

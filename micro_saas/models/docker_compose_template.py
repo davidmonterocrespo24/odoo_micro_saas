@@ -39,6 +39,13 @@ class DockerComposeTemplate(models.Model):
     is_result_postgres_conf = fields.Boolean(string="Result Postgres Conf")
     is_result_dc_body = fields.Boolean(string="Result Docker Compose")
 
+    def _default_template_odoo_conf(self):
+        odoo_conf_content = f"[options]\naddons_path =/mnt/extra-addons/ \n"
+        odoo_conf_content += "admin_passwd = admin\n"
+        odoo_conf_content += "data_dir = /var/lib/odoo\n"
+        odoo_conf_content += "logfile = /var/log/odoo/odoo.log\n"
+        return odoo_conf_content
+
     @api.depends('template_dc_body')
     def _compute_variable_ids(self):
         """compute template variable according to header text, body and buttons"""
@@ -64,17 +71,17 @@ class DockerComposeTemplate(models.Model):
     @api.depends('template_dc_body', 'variable_ids')
     def _compute_result_dc_body(self):
         for template in self:
-            template.result_dc_body = template._get_formatted_body(demo_fallback=True)
+            template.result_dc_body = template._get_formatted_body(template_body=template.result_dc_body,demo_fallback=True)
 
     @api.depends('template_odoo_conf', 'variable_ids')
     def _compute_result_odoo_conf(self):
         for template in self:
-            template.result_odoo_conf = template._get_formatted_body(demo_fallback=True)
+            template.result_odoo_conf = template._get_formatted_body(template_body=template.result_odoo_conf,demo_fallback=True)
 
     @api.depends('template_postgres_conf', 'variable_ids')
     def _compute_result_postgres_conf(self):
         for template in self:
-            template.result_postgres_conf = template._get_formatted_body(demo_fallback=True)
+            template.result_postgres_conf = template._get_formatted_body(template_body=template.result_postgres_conf,demo_fallback=True)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -94,14 +101,13 @@ class DockerComposeTemplate(models.Model):
             default['name'] = _('%(original_name)s (copy)', original_name=self.name)
         return super().copy(default)
 
-    def _get_formatted_body(self, demo_fallback=False, variable_values=None):
+    def _get_formatted_body(self, template_body='',demo_fallback=False, variable_values=None):
         self.ensure_one()
         variable_values = variable_values or {}
-        template_dc_body = self.template_dc_body or ''
         for var in self.variable_ids:
             fallback_value = var.demo_value if demo_fallback else ' '
-            template_dc_body = template_dc_body.replace(var.name, variable_values.get(var.name, fallback_value))
-        return template_dc_body
+            template_body = template_body.replace(var.name, variable_values.get(var.name, fallback_value))
+        return template_body
 
     def create_instance_from_template(self):
         self.ensure_one()
