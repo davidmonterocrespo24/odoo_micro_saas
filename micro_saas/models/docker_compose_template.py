@@ -191,10 +191,6 @@ def _get_variables_value(self, record):
     return value_by_name
 
 
-# ------------------------------------------------------------
-# TOOLS
-# ------------------------------------------------------------
-
 def _find_value_from_field_chain(self, record):
     """Get the value of field, returning display_name(s) if the field is a model."""
     self.ensure_one()
