@@ -73,18 +73,21 @@ class DockerComposeTemplate(models.Model):
                 tmpl.variable_ids = update_commands
 
     @api.depends('template_dc_body', 'variable_ids','is_result_dc_body')
+    @api.onchange('template_dc_body','variable_ids', 'is_result_dc_body')
     def _compute_result_dc_body(self):
         for template in self:
             template.result_dc_body = template._get_formatted_body(template_body=template.template_dc_body,
                                                                    demo_fallback=True)
 
     @api.depends('template_odoo_conf', 'variable_ids', 'is_result_odoo_conf')
+    @api.onchange('template_odoo_conf', 'variable_ids', 'is_result_odoo_conf')
     def _compute_result_odoo_conf(self):
         for template in self:
             template.result_odoo_conf = template._get_formatted_body(template_body=template.template_odoo_conf,
                                                                      demo_fallback=True)
 
     @api.depends('template_postgres_conf', 'variable_ids','is_result_postgres_conf')
+    @api.onchange('template_postgres_conf', 'variable_ids','is_result_postgres_conf')
     def _compute_result_postgres_conf(self):
         for template in self:
             template.result_postgres_conf = template._get_formatted_body(template_body=template.template_postgres_conf,
