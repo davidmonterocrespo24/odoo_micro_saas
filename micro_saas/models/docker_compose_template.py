@@ -111,13 +111,11 @@ class DockerComposeTemplate(models.Model):
 
     def _get_formatted_body(self, template_body='', demo_fallback=False, variable_values=None):
         self.ensure_one()
-        template_body = template_body or ''
-        result_body = template_body
-        variable_values = variable_values or {}
+        result_body = template_body or ''
         for var in self.variable_ids:
             fallback_value = var.demo_value if demo_fallback else ' '
             _logger.info(f"++++ var.name: ***{var.name}****")
-            result_body = template_body.replace(var.name, fallback_value)
+            result_body = result_body.replace(var.name, fallback_value)
         return result_body
 
     def create_instance_from_template(self):
