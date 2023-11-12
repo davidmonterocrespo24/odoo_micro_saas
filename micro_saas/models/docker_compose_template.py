@@ -116,7 +116,7 @@ class DockerComposeTemplate(models.Model):
         variable_values = variable_values or {}
         for var in self.variable_ids:
             fallback_value = var.demo_value if demo_fallback else ' '
-            _logger.info(f"++++ var.name: {var.name}")
+            _logger.info(f"++++ var.name: ***{var.name}****")
             result_body = template_body.replace( var.name,fallback_value)
         return result_body
 
