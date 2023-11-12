@@ -31,7 +31,6 @@ class DockerComposeTemplate(models.Model):
     variable_ids = fields.One2many('docker.compose.template.variable', 'dc_template_id',
                                    string="Template Variables", store=True, compute='_compute_variable_ids',
                                    precompute=True, readonly=False)
-
     result_dc_body = fields.Text(string="Result Docker Compose", compute='_compute_result_dc_body', store=True)
     tag_ids = fields.Many2many('docker.compose.tag', string="Tags", tracking=True)
     template_dc_body = fields.Text(string="Template Docker Compose")
@@ -41,7 +40,6 @@ class DockerComposeTemplate(models.Model):
     template_postgres_conf = fields.Text(string="Template Postgres Conf")
     result_postgres_conf = fields.Text(string="Result Postgres Conf", compute='_compute_result_postgres_conf',
                                        store=True)
-
     is_result_odoo_conf = fields.Boolean(string="Result Odoo Conf")
     is_result_postgres_conf = fields.Boolean(string="Result Postgres Conf")
     is_result_dc_body = fields.Boolean(string="Result Docker Compose")
@@ -53,9 +51,9 @@ class DockerComposeTemplate(models.Model):
             to_delete = []
             to_create = []
             body_variables = set(re.findall(r'{{[^{}]+}}', tmpl.template_dc_body or ''))
-            #sumar las variables de template_odoo_conf
+            # sumar las variables de template_odoo_conf
             body_variables = body_variables.union(set(re.findall(r'{{[^{}]+}}', tmpl.template_odoo_conf or '')))
-            #sumar las variables de template_postgres_conf
+            # sumar las variables de template_postgres_conf
             body_variables = body_variables.union(set(re.findall(r'{{[^{}]+}}', tmpl.template_postgres_conf or '')))
             existing_body_variables = tmpl.variable_ids
             existing_body_variables = {var.name: var for var in existing_body_variables}
@@ -72,8 +70,8 @@ class DockerComposeTemplate(models.Model):
             if update_commands:
                 tmpl.variable_ids = update_commands
 
-    @api.depends('template_dc_body', 'variable_ids','is_result_dc_body')
-    @api.onchange('template_dc_body','variable_ids', 'is_result_dc_body')
+    @api.depends('template_dc_body', 'variable_ids', 'is_result_dc_body')
+    @api.onchange('template_dc_body', 'variable_ids', 'is_result_dc_body')
     def _compute_result_dc_body(self):
         for template in self:
             template.result_dc_body = template._get_formatted_body(template_body=template.template_dc_body,
@@ -86,8 +84,8 @@ class DockerComposeTemplate(models.Model):
             template.result_odoo_conf = template._get_formatted_body(template_body=template.template_odoo_conf,
                                                                      demo_fallback=True)
 
-    @api.depends('template_postgres_conf', 'variable_ids','is_result_postgres_conf')
-    @api.onchange('template_postgres_conf', 'variable_ids','is_result_postgres_conf')
+    @api.depends('template_postgres_conf', 'variable_ids', 'is_result_postgres_conf')
+    @api.onchange('template_postgres_conf', 'variable_ids', 'is_result_postgres_conf')
     def _compute_result_postgres_conf(self):
         for template in self:
             template.result_postgres_conf = template._get_formatted_body(template_body=template.template_postgres_conf,
@@ -118,7 +116,8 @@ class DockerComposeTemplate(models.Model):
         variable_values = variable_values or {}
         for var in self.variable_ids:
             fallback_value = var.demo_value if demo_fallback else ' '
-            result_body = template_body.replace(var.name, variable_values.get(var.name, fallback_value))
+            var_name = var.name.replace('{{', '').replace('}}', '')
+            result_body = template_body.replace(var_name, variable_values.get(var.name, fallback_value))
         return result_body
 
     def create_instance_from_template(self):
