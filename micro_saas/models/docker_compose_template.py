@@ -19,7 +19,7 @@ class DockerComposeTemplate(models.Model):
     ]
 
     def _default_template_odoo_conf(self):
-        odoo_conf_content = f"[options]\naddons_path =/mnt/extra-addons/ \n"
+        odoo_conf_content = "[options]\naddons_path =/mnt/extra-addons/ \n"
         odoo_conf_content += "admin_passwd = admin\n"
         odoo_conf_content += "data_dir = /var/lib/odoo\n"
         odoo_conf_content += "logfile = /var/log/odoo/odoo.log\n"
