@@ -33,17 +33,39 @@
                             <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                         </group>
                         <notebook>
-                            <page id="result_dc_body" name="Result of Docker Compose">
-                                <field name="result_dc_body"
-                                       readonly="1"
-                                       widget="ace" options="{'mode': 'xml' ,'theme': 'monokai'}"/>
-                            </page>
+                            <page id="result_dc_body" name="Template of Docker Compose">
+                            <field name="is_result_dc_body" widget="boolean_toggle"/>
+                            <field name="result_dc_body"
+                                   readonly="1" attrs="{'invisible': [('is_result_dc_body', '=', False)]}"
+                                   widget="ace" options="{'mode': 'xml' ,'theme': 'monokai'}"/>
+                            <label for="template_dc_body" string="Body Template"
+                                   attrs="{'invisible': [('is_result_dc_body', '=', True)]}"/>
+                            <field name="template_dc_body" widget="ace" options="{'mode': 'xml'}"
+                                   attrs="{'invisible': [('is_result_dc_body', '=', True)]}"
+                                   placeholder="Use {{1}}, {{2}} as placeholders for dynamic variable"/>
+                        </page>
+                        <page id="result_dc_body" name="Template Odoo Conf">
+                            <field name="is_result_odoo_conf" widget="boolean_toggle"/>
+                            <field name="result_odoo_conf"
+                                   readonly="1" attrs="{'invisible': [('is_result_odoo_conf', '=', False)]}"
+                                   widget="ace" options="{'mode': 'xml' ,'theme': 'monokai'}"/>
+                            <label for="template_odoo_conf" string="Body Template"
+                                   attrs="{'invisible': [('is_result_odoo_conf', '=', True)]}"/>
+                            <field name="template_odoo_conf" widget="ace" options="{'mode': 'xml'}"
+                                   attrs="{'invisible': [('is_result_odoo_conf', '=', True)]}"
+                                   placeholder="Use {{1}}, {{2}} as placeholders for dynamic variable"/>
 
-                            <page id="template" name="Body Template">
-                                <label for="template_dc_body" string="Body Template"/>
-                                <field name="template_dc_body" widget="ace" options="{'mode': 'xml'}"
-                                       placeholder="Use {{1}}, {{2}} as placeholders for dynamic variable"/>
-                            </page>
+                        </page>
+                        <page id="postgres" name="Template Postgres Conf">
+                            <field name="is_result_postgres_conf" widget="boolean_toggle"/>
+                            <field name="result_postgres_conf"
+                                   attrs="{'invisible': [('is_result_postgres_conf', '=', False)]}"
+                                   widget="ace" options="{'mode': 'xml' ,'theme': 'monokai'}"/>
+                            <field name="template_postgres_conf"
+                                   attrs="{'invisible': [('is_result_postgres_conf', '=', True)]}"
+                                   widget="ace" options="{'mode': 'xml' ,'theme': 'monokai'}"
+                                   placeholder="Use {{1}}, {{2}} as placeholders for dynamic variable"/>
+                        </page>
                         </notebook>
                         <notebook>
                             <page string="Variables">

@@ -1,8 +1,8 @@
-from odoo import models, fields, api, _, Command
 import logging
 import re
 from functools import reduce
 
+from odoo import models, fields, api, _, Command
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -18,25 +18,43 @@ class DockerComposeTemplate(models.Model):
         ('name_uniq', 'unique (name)', 'The name of the template must be unique !'),
     ]
 
+    def _default_template_odoo_conf(self):
+        odoo_conf_content = "[options]\naddons_path =/mnt/extra-addons/ \n"
+        odoo_conf_content += "admin_passwd = admin\n"
+        odoo_conf_content += "data_dir = /var/lib/odoo\n"
+        odoo_conf_content += "logfile = /var/log/odoo/odoo.log\n"
+        return odoo_conf_content
+
     name = fields.Char(string="Name", required=True)
     sequence = fields.Integer(required=True, default=0)
     active = fields.Boolean(default=True)
     variable_ids = fields.One2many('docker.compose.template.variable', 'dc_template_id',
                                    string="Template Variables", store=True, compute='_compute_variable_ids',
                                    precompute=True, readonly=False)
-
     result_dc_body = fields.Text(string="Result Docker Compose", compute='_compute_result_dc_body', store=True)
     tag_ids = fields.Many2many('docker.compose.tag', string="Tags", tracking=True)
     template_dc_body = fields.Text(string="Template Docker Compose")
     repository_line = fields.One2many('repository.repo.line', 'instance_id', string='Repository and Branch')
+    result_odoo_conf = fields.Text(string="Result Odoo Conf", compute='_compute_result_odoo_conf', store=True)
+    template_odoo_conf = fields.Text(string="Template Odoo Conf", default=_default_template_odoo_conf)
+    template_postgres_conf = fields.Text(string="Template Postgres Conf")
+    result_postgres_conf = fields.Text(string="Result Postgres Conf", compute='_compute_result_postgres_conf',
+                                       store=True)
+    is_result_odoo_conf = fields.Boolean(string="Result Odoo Conf")
+    is_result_postgres_conf = fields.Boolean(string="Result Postgres Conf")
+    is_result_dc_body = fields.Boolean(string="Result Docker Compose")
 
-    @api.depends('template_dc_body')
+    @api.depends('template_dc_body', 'template_odoo_conf', 'template_postgres_conf')
     def _compute_variable_ids(self):
         """compute template variable according to header text, body and buttons"""
         for tmpl in self:
             to_delete = []
             to_create = []
             body_variables = set(re.findall(r'{{[^{}]+}}', tmpl.template_dc_body or ''))
+            # sumar las variables de template_odoo_conf
+            body_variables = body_variables.union(set(re.findall(r'{{[^{}]+}}', tmpl.template_odoo_conf or '')))
+            # sumar las variables de template_postgres_conf
+            body_variables = body_variables.union(set(re.findall(r'{{[^{}]+}}', tmpl.template_postgres_conf or '')))
             existing_body_variables = tmpl.variable_ids
             existing_body_variables = {var.name: var for var in existing_body_variables}
             new_body_variable_names = [var_name for var_name in body_variables if
@@ -52,10 +70,26 @@ class DockerComposeTemplate(models.Model):
             if update_commands:
                 tmpl.variable_ids = update_commands
 
-    @api.depends('template_dc_body', 'variable_ids')
+    @api.depends('template_dc_body', 'variable_ids', 'is_result_dc_body')
+    @api.onchange('template_dc_body', 'variable_ids', 'is_result_dc_body')
     def _compute_result_dc_body(self):
         for template in self:
-            template.result_dc_body = template._get_formatted_body(demo_fallback=True)
+            template.result_dc_body = template._get_formatted_body(template_body=template.template_dc_body,
+                                                                   demo_fallback=True)
+
+    @api.depends('template_odoo_conf', 'variable_ids', 'is_result_odoo_conf')
+    @api.onchange('template_odoo_conf', 'variable_ids', 'is_result_odoo_conf')
+    def _compute_result_odoo_conf(self):
+        for template in self:
+            template.result_odoo_conf = template._get_formatted_body(template_body=template.template_odoo_conf,
+                                                                     demo_fallback=True)
+
+    @api.depends('template_postgres_conf', 'variable_ids', 'is_result_postgres_conf')
+    @api.onchange('template_postgres_conf', 'variable_ids', 'is_result_postgres_conf')
+    def _compute_result_postgres_conf(self):
+        for template in self:
+            template.result_postgres_conf = template._get_formatted_body(template_body=template.template_postgres_conf,
+                                                                         demo_fallback=True)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -75,14 +109,14 @@ class DockerComposeTemplate(models.Model):
             default['name'] = _('%(original_name)s (copy)', original_name=self.name)
         return super().copy(default)
 
-    def _get_formatted_body(self, demo_fallback=False, variable_values=None):
+    def _get_formatted_body(self, template_body='', demo_fallback=False, variable_values=None):
         self.ensure_one()
-        variable_values = variable_values or {}
-        template_dc_body = self.template_dc_body or ''
+        result_body = template_body or ''
         for var in self.variable_ids:
             fallback_value = var.demo_value if demo_fallback else ' '
-            template_dc_body = template_dc_body.replace(var.name, variable_values.get(var.name, fallback_value))
-        return template_dc_body
+            _logger.info(f"++++ var.name: ***{var.name}****")
+            result_body = result_body.replace(var.name, fallback_value)
+        return result_body
 
     def create_instance_from_template(self):
         self.ensure_one()
@@ -154,10 +188,6 @@ def _get_variables_value(self, record):
 
     return value_by_name
 
-
-# ------------------------------------------------------------
-# TOOLS
-# ------------------------------------------------------------
 
 def _find_value_from_field_chain(self, record):
     """Get the value of field, returning display_name(s) if the field is a model."""

@@ -5,7 +5,6 @@ import subprocess
 from datetime import datetime
 
 from odoo import models, fields, api
-from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -37,7 +36,7 @@ class OdooDockerInstance(models.Model):
             self.template_dc_body = self.template_id.template_dc_body
             self.tag_ids = self.template_id.tag_ids
             self.repository_line = self.template_id.repository_line
-            self.result_dc_body = self._get_formatted_body(demo_fallback=True)
+            self.result_dc_body = self._get_formatted_body(template_body=self.template_dc_body, demo_fallback=True)
             self.variable_ids = self.template_id.variable_ids
             self.variable_ids.filtered(lambda r: r.name == '{{HTTP-PORT}}').demo_value = self.http_port
             self.variable_ids.filtered(lambda r: r.name == '{{LONGPOLLING-PORT}}').demo_value = self.longpolling_port
@@ -60,7 +59,8 @@ class OdooDockerInstance(models.Model):
             instance.user_path = os.path.expanduser('~')
             instance.instance_data_path = os.path.join(instance.user_path, 'odoo_docker', 'data',
                                                        instance.name.replace('.', '_').replace(' ', '_').lower())
-            instance.result_dc_body = self._get_formatted_body(demo_fallback=True)
+            instance.result_dc_body = self._get_formatted_body(template_body=instance.template_dc_body,
+                                                               demo_fallback=True)
 
     @api.depends('repository_line')
     def _compute_addons_path(self):
@@ -84,15 +84,12 @@ class OdooDockerInstance(models.Model):
     @api.depends('http_port')
     def _compute_instance_url(self):
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-        # dividir la url en partes para obtener la url
         base_url = base_url.split(':')
         base_url = base_url[0] + ':' + base_url[1] + ':'
-
         for instance in self:
             if not instance.http_port:
                 continue
-            instance_url = f"{base_url}{instance.http_port}"
-            instance.instance_url = instance_url
+            instance.instance_url = f"{base_url}{instance.http_port}"
 
     def open_instance_url(self):
         for instance in self:
@@ -131,21 +128,13 @@ class OdooDockerInstance(models.Model):
                 pass
             finally:
                 sock.close()
-
-        # Si no se encuentra ningún puerto disponible en el rango especificado
         self.add_to_log("[ERROR] No se encontraron puertos disponibles en el rango especificado.")
 
     def _update_docker_compose_file(self):
-        # Ruta al archivo docker-compose.yml de plantilla
-
         # Ruta donde se guardará el archivo docker-compose.yml modificado
-        if not os.path.exists(self.instance_data_path):
-            _logger.info("Creating directory %s", self.instance_data_path)
-            self._makedirs(self.instance_data_path)
+        self._makedirs(self.instance_data_path)
         modified_path = os.path.join(self.instance_data_path, 'docker-compose.yml')
-        # Guarda el archivo docker-compose.yml modificado
-        with open(modified_path, "w") as modified_file:
-            modified_file.write(self.result_dc_body)
+        self.create_file(modified_path, self.result_dc_body)
 
     def _get_repo_name(self, line):
         if not line.repository_id or not line.name or not line.repository_id.name:
@@ -155,20 +144,12 @@ class OdooDockerInstance(models.Model):
             '/', '_').replace('\\', '_') + "_branch_" + line.name.replace('.', '_')
         return name
 
-    def _makedirs(self, path):
-        try:
-            os.makedirs(path)
-        except Exception as e:
-            raise UserError(
-                f"Error while creating directory {path} : {str(e)}")
-
     def _clone_repositories(self):
         for instance in self:
             for line in instance.repository_line:
                 repo_name = self._get_repo_name(line)
                 repo_path = os.path.join(instance.instance_data_path, "addons", repo_name)
-                if not os.path.exists(repo_path):
-                    self._makedirs(repo_path)
+                self._makedirs(repo_path)
                 try:
                     cmd = f"git clone {line.repository_id.name} -b {line.name} {repo_path}"
                     self.excute_command(cmd, shell=True, check=True)
@@ -185,52 +166,23 @@ class OdooDockerInstance(models.Model):
 
     def _create_odoo_conf(self):
         for instance in self:
-            odoo_conf_path = os.path.join(self.instance_data_path, "etc", 'odoo.conf')
-            if not os.path.exists(os.path.dirname(odoo_conf_path)):
-                self._makedirs(os.path.dirname(odoo_conf_path))
-            addons_path = instance.addons_path
+            odoo_conf_path = os.path.join(instance.instance_data_path, "etc", 'odoo.conf')
+            instance._makedirs(os.path.dirname(odoo_conf_path))
             try:
-                with open(odoo_conf_path, 'w') as odoo_conf_file:
-                    odoo_conf_file.write(f"[options]\naddons_path = {addons_path}\n")
-                    odoo_conf_file.write("admin_passwd = admin\n")
-                    odoo_conf_file.write("data_dir = /var/lib/odoo\n")
-                    odoo_conf_file.write("logfile = /var/log/odoo/odoo.log\n")
-                self.add_to_log(f"[INFO] Archivo odoo.conf creado exitosamente en {odoo_conf_path}")
+                odoo_conf_content = instance.result_odoo_conf
+                instance.create_file(odoo_conf_path, odoo_conf_content)
+                instance.add_to_log(f"[INFO] Archivo odoo.conf creado exitosamente en {odoo_conf_path}")
             except Exception as e:
-                self.add_to_log(f"[ERROR] Error al crear el archivo odoo.conf en {odoo_conf_path}")
-                self.write({'state': 'error'})
+                instance.add_to_log(f"[ERROR] Error al crear el archivo odoo.conf en {odoo_conf_path}")
+                instance.write({'state': 'error'})
                 if hasattr(e, 'stderr') and e.stderr:
-                    self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8'))
+                    instance.add_to_log("[ERROR]  " + e.stderr.decode('utf-8'))
                 else:
-                    self.add_to_log("[ERROR]  " + str(e))
-                self.write({'state': 'stopped'})
-
-    @api.model
-    def _is_docker_installed(self):
-        try:
-            subprocess.run(["docker", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
-            return True
-        except Exception as e:
-            self.add_to_log("[ERROR] Docker don't installed in the system.")
-            self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8') if hasattr(e, 'stderr') else str(e))
-            self.write({'state': 'error'})
-            return False
-
-    @api.model
-    def _is_docker_compose_installed(self):
-        try:
-            subprocess.run(["docker-compose", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
-            return True
-        except Exception as e:
-            self.add_to_log("[ERROR] Docker Compose don't installed in the system.")
-            self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8') if hasattr(e, 'stderr') else str(e))
-            self.write({'state': 'error'})
-            return False
+                    instance.add_to_log("[ERROR]  " + str(e))
+                instance.write({'state': 'stopped'})
 
     def start_instance(self):
         # Obtén un puerto disponible
-        # if self._is_docker_installed() or self._is_docker_compose_installed():
-        #    return False
         self.add_to_log("[INFO] Starting Odoo Instance")
         self._update_docker_compose_file()
 
@@ -254,7 +206,10 @@ class OdooDockerInstance(models.Model):
             # Imprimir el stderr para obtener más detalles
             cmd = f"docker-compose -f {modified_path} up -d"
             self.add_to_log("[ERROR] Error to execute docker-compose command %s" % cmd)
-            self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8'))
+            if hasattr(e, 'stderr') and e.stderr:
+                self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8'))
+            else:
+                self.add_to_log("[ERROR]  " + str(e))
             self.write({'state': 'error'})
 
     def stop_instance(self):
@@ -302,10 +257,7 @@ class OdooDockerInstance(models.Model):
                     # Ejecuta el comando de Docker Compose para detener y eliminar los contenedores
                     cmd = f"docker-compose -f {modified_path} down"
                     self.excute_command(cmd, shell=True, check=True)
-                    # Borra los archivos de la instancia
-
                 except Exception as e:
-                    # Maneja cualquier error que pueda ocurrir al detener Docker Compose
                     pass
                 try:
                     # borra todos los archivos de la instancia y carpetas
@@ -315,10 +267,8 @@ class OdooDockerInstance(models.Model):
                         for name in dirs:
                             os.rmdir(os.path.join(root, name))
                 except Exception as e:
-                    # Maneja cualquier error que pueda ocurrir al detener Docker Compose
                     pass
 
-        # Luego, elimina el registro del modelo
         return super(OdooDockerInstance, self).unlink()
 
     def excute_command(self, cmd, shell=True, check=True):
@@ -326,4 +276,21 @@ class OdooDockerInstance(models.Model):
             result = subprocess.run(cmd, shell=shell, check=check, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             return result
         except Exception as e:
-            raise "Error to execute command: %s" % cmd
+            self.add_to_log(f"Error to execute command: {str(e)}")
+            self.add_to_log("**** Execute the following command manually from the terminal for more details ****")
+            self.add_to_log("**** " + cmd + " ****")
+
+    def _makedirs(self, path):
+        try:
+            if not os.path.exists(path):
+                os.makedirs(path)
+        except Exception as e:
+            self.add_to_log(f"Error while creating directory {path} : {str(e)}")
+
+    def create_file(self, modified_path, result_dc_body):
+        try:
+            with open(modified_path, "w") as modified_file:
+                modified_file.write(result_dc_body)
+        except Exception as e:
+            self.state = 'error'
+            self.add_to_log(f"[ERROR] Error to create file: {str(e)}")

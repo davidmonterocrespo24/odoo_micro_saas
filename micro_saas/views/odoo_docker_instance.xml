@@ -8,7 +8,7 @@
             <form string="Odoo Docker Instance">
                 <header>
                     <button string="Start Instance" type="object" name="start_instance"
-                            class="oe_highlight o_button_icon o_icon_play" states="draft,error"/>
+                            class="oe_highlight o_button_icon o_icon_play" states="draft,error,stopped"/>
                     <button string="Stop Instance" type="object" name="stop_instance" states="running"
                             class="o_button_icon o_icon_stop"/>
                     <button string="Restart Instance" type="object" name="restart_instance" states="running"
@@ -18,31 +18,54 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="name"/>
+                            <field name="name" />
                             <field name="instance_url" readonly="1" widget="url"/>
-                            <field name="http_port"/>
-                            <field name="longpolling_port"/>
+                            <field name="http_port" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="longpolling_port" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                         <group>
-                            <field name="template_id"/>
-                            <field name="addons_path"/>
-                            <field name="user_path"/>
-                            <field name="instance_data_path"/>
+                            <field name="template_id" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="addons_path" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="user_path" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="instance_data_path" attrs="{'readonly': [('state', '!=', 'draft')]}" />
                             <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                         </group>
                     </group>
                     <notebook>
-                        <page id="result_dc_body" name="Result of Docker Compose">
+                        <page id="result_dc_body" name="Template of Docker Compose">
+                            <field name="is_result_dc_body" widget="boolean_toggle"/>
                             <field name="result_dc_body"
-                                   readonly="1"
+                                   readonly="1" attrs="{'invisible': [('is_result_dc_body', '=', False)]}"
                                    widget="ace" options="{'mode': 'xml' ,'theme': 'monokai'}"/>
-                        </page>
-
-                        <page id="variables" name="Body Template">
-                            <label for="template_dc_body" string="Body Template"/>
+                            <label for="template_dc_body" string="Body Template"
+                                   attrs="{'invisible': [('is_result_dc_body', '=', True)]}"/>
                             <field name="template_dc_body" widget="ace" options="{'mode': 'xml'}"
+                                   attrs="{'invisible': [('is_result_dc_body', '=', True)]}"
                                    placeholder="Use {{1}}, {{2}} as placeholders for dynamic variable"/>
                         </page>
+                        <page id="result_dc_body" name="Template Odoo Conf">
+                            <field name="is_result_odoo_conf" widget="boolean_toggle"/>
+                            <field name="result_odoo_conf"
+                                   readonly="1" attrs="{'invisible': [('is_result_odoo_conf', '=', False)]}"
+                                   widget="ace" options="{'mode': 'xml' ,'theme': 'monokai'}"/>
+                            <label for="template_odoo_conf" string="Body Template"
+                                   attrs="{'invisible': [('is_result_odoo_conf', '=', True)]}"/>
+                            <field name="template_odoo_conf" widget="ace" options="{'mode': 'xml'}"
+                                   attrs="{'invisible': [('is_result_odoo_conf', '=', True)]}"
+                                   placeholder="Use {{1}}, {{2}} as placeholders for dynamic variable"/>
+
+                        </page>
+                        <page id="postgres" name="Template Postgres Conf">
+                            <field name="is_result_postgres_conf" widget="boolean_toggle"/>
+                            <field name="result_postgres_conf"
+                                   attrs="{'invisible': [('is_result_postgres_conf', '=', False)]}"
+                                   widget="ace" options="{'mode': 'xml' ,'theme': 'monokai'}"/>
+                            <field name="template_postgres_conf"
+                                   attrs="{'invisible': [('is_result_postgres_conf', '=', True)]}"
+                                   widget="ace" options="{'mode': 'xml' ,'theme': 'monokai'}"
+                                   placeholder="Use {{1}}, {{2}} as placeholders for dynamic variable"/>
+                        </page>
+
                         <page string="Help">
                             <div class="oe_row oe_spaced">
                                 <h1>Installation Guide: Docker, Docker Compose, and Git</h1>
