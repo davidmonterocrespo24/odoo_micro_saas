@@ -1,5 +1,4 @@
 <odoo>
-
     <!-- Vista de árbol para RepositoryRepo -->
     <record id="view_repository_repo_tree" model="ir.ui.view">
         <field name="name">repository.repo.tree</field>
