@@ -18,16 +18,16 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="name"/>
+                            <field name="name" />
                             <field name="instance_url" readonly="1" widget="url"/>
-                            <field name="http_port"/>
-                            <field name="longpolling_port"/>
+                            <field name="http_port" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="longpolling_port" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                         <group>
-                            <field name="template_id"/>
-                            <field name="addons_path"/>
-                            <field name="user_path"/>
-                            <field name="instance_data_path"/>
+                            <field name="template_id" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="addons_path" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="user_path" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="instance_data_path" attrs="{'readonly': [('state', '!=', 'draft')]}" />
                             <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                         </group>
                     </group>
