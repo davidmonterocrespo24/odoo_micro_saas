@@ -8,27 +8,139 @@
             <form string="Odoo Docker Instance">
                 <header>
                     <button string="Start Instance" type="object" name="start_instance"
-                            class="oe_highlight o_button_icon o_icon_play" states="stopped"/>
+                            class="oe_highlight o_button_icon o_icon_play" states="draft,error,stopped"/>
                     <button string="Stop Instance" type="object" name="stop_instance" states="running"
                             class="o_button_icon o_icon_stop"/>
                     <button string="Restart Instance" type="object" name="restart_instance" states="running"
                             class="o_button_icon o_icon_refresh"/>
-                    <button string="Cancel Instance" type="object" name="cancel_instance" states="draft"
-                            class="o_button_icon o_icon_cancel"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
                     <group>
                         <group>
-                            <field name="name"/>
+                            <field name="name" />
                             <field name="instance_url" readonly="1" widget="url"/>
+                            <field name="http_port" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="longpolling_port" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                         <group>
-                            <field name="http_port"/>
-                            <field name="longpolling_port"/>
-                            <field name="addons_path"/>
+                            <field name="template_id" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="addons_path" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="user_path" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="instance_data_path" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                         </group>
                     </group>
+                    <notebook>
+                        <page id="result_dc_body" name="Template of Docker Compose">
+                            <field name="is_result_dc_body" widget="boolean_toggle"/>
+                            <field name="result_dc_body"
+                                   readonly="1" attrs="{'invisible': [('is_result_dc_body', '=', False)]}"
+                                   widget="ace" options="{'mode': 'xml' ,'theme': 'monokai'}"/>
+                            <label for="template_dc_body" string="Body Template"
+                                   attrs="{'invisible': [('is_result_dc_body', '=', True)]}"/>
+                            <field name="template_dc_body" widget="ace" options="{'mode': 'xml'}"
+                                   attrs="{'invisible': [('is_result_dc_body', '=', True)]}"
+                                   placeholder="Use {{1}}, {{2}} as placeholders for dynamic variable"/>
+                        </page>
+                        <page id="result_dc_body" name="Template Odoo Conf">
+                            <field name="is_result_odoo_conf" widget="boolean_toggle"/>
+                            <field name="result_odoo_conf"
+                                   readonly="1" attrs="{'invisible': [('is_result_odoo_conf', '=', False)]}"
+                                   widget="ace" options="{'mode': 'xml' ,'theme': 'monokai'}"/>
+                            <label for="template_odoo_conf" string="Body Template"
+                                   attrs="{'invisible': [('is_result_odoo_conf', '=', True)]}"/>
+                            <field name="template_odoo_conf" widget="ace" options="{'mode': 'xml'}"
+                                   attrs="{'invisible': [('is_result_odoo_conf', '=', True)]}"
+                                   placeholder="Use {{1}}, {{2}} as placeholders for dynamic variable"/>
+
+                        </page>
+                        <page id="postgres" name="Template Postgres Conf">
+                            <field name="is_result_postgres_conf" widget="boolean_toggle"/>
+                            <field name="result_postgres_conf"
+                                   attrs="{'invisible': [('is_result_postgres_conf', '=', False)]}"
+                                   widget="ace" options="{'mode': 'xml' ,'theme': 'monokai'}"/>
+                            <field name="template_postgres_conf"
+                                   attrs="{'invisible': [('is_result_postgres_conf', '=', True)]}"
+                                   widget="ace" options="{'mode': 'xml' ,'theme': 'monokai'}"
+                                   placeholder="Use {{1}}, {{2}} as placeholders for dynamic variable"/>
+                        </page>
+
+                        <page string="Help">
+                            <div class="oe_row oe_spaced">
+                                <h1>Installation Guide: Docker, Docker Compose, and Git</h1>
+                                <h2>Docker:</h2>
+                                <ol>
+                                    <li>Visit the official Docker website for installation instructions: <a
+                                        href="https://docs.docker.com/get-docker/">Docker Installation Guide</a>.
+                                    </li>
+                                    <li>Choose the appropriate installation method for your operating system (Windows,
+                                        macOS, or Linux).
+                                    </li>
+                                    <li>After installation, verify Docker's successful installation by running <code>
+                                        docker
+                                        --version</code>.
+                                    </li>
+                                </ol>
+
+                                <h2>Docker Compose:</h2>
+                                <ol>
+                                    <li>Docker Compose simplifies the management of multi-container Docker applications.
+                                        To
+                                        install Docker Compose:
+                                    </li>
+                                    <li>Follow the official Docker Compose installation guide: <a
+                                        href="https://docs.docker.com/compose/install/">Docker Compose Installation</a>.
+                                    </li>
+                                    <li>Select the instructions relevant to your operating system.</li>
+                                    <li>Confirm the installation by running <code>docker-compose --version</code>.
+                                    </li>
+                                </ol>
+
+                                <h2>Git:</h2>
+                                <ol>
+                                    <li>Git is a distributed version control system. To install Git:</li>
+                                    <li>Visit the Git website and download the appropriate installer for your OS: <a
+                                        href="https://git-scm.com/downloads">Git Downloads</a>.
+                                    </li>
+                                    <li>Follow the installation instructions provided.</li>
+                                    <li>Verify Git's installation by running <code>git --version</code>.
+                                    </li>
+                                </ol>
+
+                                <h1>Community Support and Contribution</h1>
+                                <p>We're thrilled to offer this module to the community as a free resource for efficient
+                                    Odoo Docker instance management. We welcome contributions, feedback, and suggestions
+                                    from the community to enhance and improve this tool further.
+                                </p>
+                                <p>Your support can help us create more features, improve stability, and make it even
+                                    more
+                                    valuable for users worldwide. Please feel free to get involved by reporting issues,
+                                    submitting pull requests, or providing feedback on how we can make this module even
+                                    better.
+                                </p>
+                                <p>Together, we can make a positive impact on the Odoo community and simplify
+                                    development
+                                    processes for all users. Thank you for your support!
+                                </p>
+                                <p>For more information, please contact us at <a
+                                    href="mailto:davidmonterocrespo24@gmail.com"></a> : davidmonterocrespo24@gmail.com
+                                </p>
+                            </div>
+                        </page>
+                    </notebook>
+                    <notebook>
+                        <page string="Variables">
+                            <field name="variable_ids">
+                                <tree editable="bottom" create="false" delete="false">
+                                    <field name="display_name" string="Name"/>
+                                    <field name="demo_value" required="1"/>
+                                    <field name="field_type"/>
+                                    <field name="name" invisible="1" force_save="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
                     <notebook>
                         <page string="Repository">
                             <field name="repository_line">
@@ -40,11 +152,13 @@
                             </field>
                         </page>
                     </notebook>
-                    <group>
-                        <field name="log" colspan="4" nolabel="1"
-                               style=" width: 100%; height: 600px;  overflow-y: auto;color:rgb(255,255,255);  background: black;"
-                               widget="html" readonly="1"/>
-                    </group>
+                    <notebook>
+                        <page string="Logs">
+                            <field name="log" colspan="4" nolabel="1"
+                                   style=" width: 100%; height: 600px;  overflow-y: auto;color:rgb(255,255,255);  background: black;"
+                                   widget="html" readonly="1"/>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
@@ -58,15 +172,15 @@
             <kanban class="o_kanban_mobile" archivable="false">
                 <templates>
                     <t t-name="kanban-box">
-
                         <div class="oe_kanban_global_click">
-                             <div class="o_kanban_record_bottom">
-                                    <div class="oe_kanban_bottom_right">
-                                        <span t-attf-class="badge #{['draft', 'cancel'].indexOf(record.state.raw_value) > -1 ? 'badge-secondary' : ['stopped'].indexOf(record.state.raw_value) > -1 ? 'badge-danger' : ['running'].indexOf(record.state.raw_value) > -1 ? 'badge-success' : ''}">
-                                            <field name="state"/>
-                                        </span>
-                                    </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_right">
+                                    <span
+                                        t-attf-class="badge #{['draft', 'error'].indexOf(record.state.raw_value) > -1 ? 'badge-secondary' : ['stopped'].indexOf(record.state.raw_value) > -1 ? 'badge-danger' : ['running'].indexOf(record.state.raw_value) > -1 ? 'badge-success' : ''}">
+                                        <field name="state"/>
+                                    </span>
                                 </div>
+                            </div>
                             <div class="oe_kanban_card">
                                 <div class="oe_kanban_card_header">
                                     <div class="oe_kanban_card_header_title">
@@ -87,6 +201,10 @@
                                     <div class="oe_kanban_card_content_field">
                                         <field name="addons_path"/>
                                     </div>
+                                    <div class="oe_kanban_card_content_field">
+                                        <field name="tag_ids" widget="many2many_tags"
+                                               options="{'color_field': 'color'}"/>
+                                    </div>
                                 </div>
                                 <br/>
 
@@ -102,8 +220,11 @@
                             </div>
                         </div>
                     </t>
+
                 </templates>
             </kanban>
         </field>
     </record>
+
+
 </odoo>

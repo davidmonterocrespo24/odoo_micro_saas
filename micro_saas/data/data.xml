@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Template para Odoo 13 -->
+        <record id="docker_compose_template_odoo13" model="docker.compose.template">
+            <field name="name">Odoo 13</field>
+            <field name="sequence">10</field>
+            <field name="active">True</field>
+            <field name="template_dc_body"><![CDATA[
+version: '2'
+services:
+  db:
+    image: postgres:{{POSTGRES-VERSION}}
+    user: root
+    environment:
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+      - POSTGRES_DB=postgres
+    restart: always
+    volumes:
+      - ./postgresql:/var/lib/postgresql/data
+
+  odoo13:
+    image: odoo:{{ODOO-VERSION}}
+    user: root
+    depends_on:
+      - db
+    ports:
+      - "{{HTTP-PORT}}:8069"
+      - "{{LONGPOLLING-PORT}}:8072"
+    tty: true
+    command: --
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo
+    volumes:
+      - ./addons:/mnt/extra-addons
+      - ./etc:/etc/odoo
+      - ./data:/var/lib/odoo
+    restart: always
+]]></field>
+             <field name="variable_ids" eval="[
+            (5, 0, 0),
+            (0, 0, {
+                'name': '{{POSTGRES-VERSION}}',
+                'demo_value': '12',
+            }),
+            (0, 0, {
+                'name': '{{ODOO-VERSION}}',
+                'demo_value': '13',
+            }),
+            (0, 0, {
+                'name': '{{HTTP-PORT}}',
+                'demo_value': '8069',
+            }),
+            (0, 0, {
+                'name': '{{LONGPOLLING-PORT}}',
+                'demo_value': '8072',
+            }),
+        ]"/>
+        </record>
+
+        <!-- Template para Odoo 14 -->
+        <record id="docker_compose_template_odoo14" model="docker.compose.template">
+            <field name="name">Odoo 14</field>
+            <field name="sequence">20</field>
+            <field name="active">True</field>
+            <field name="template_dc_body"><![CDATA[
+version: '2'
+services:
+  db:
+    image: postgres:{{POSTGRES-VERSION}}
+    user: root
+    environment:
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+      - POSTGRES_DB=postgres
+    restart: always
+    volumes:
+      - ./postgresql:/var/lib/postgresql/data
+
+  odoo14:
+    image: odoo:{{ODOO-VERSION}}
+    user: root
+    depends_on:
+      - db
+    ports:
+      - "{{HTTP-PORT}}:8069"
+      - "{{LONGPOLLING-PORT}}:8072"
+    tty: true
+    command: --
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo
+    volumes:
+      - ./addons:/mnt/extra-addons
+      - ./etc:/etc/odoo
+      - ./data:/var/lib/odoo
+    restart: always
+]]></field>
+            <field name="variable_ids" eval="[
+            (5, 0, 0),
+            (0, 0, {
+                'name': '{{POSTGRES-VERSION}}',
+                'demo_value': '12',
+            }),
+            (0, 0, {
+                'name': '{{ODOO-VERSION}}',
+                'demo_value': '14',
+            }),
+            (0, 0, {
+                'name': '{{HTTP-PORT}}',
+                'demo_value': '8069',
+            }),
+            (0, 0, {
+                'name': '{{LONGPOLLING-PORT}}',
+                'demo_value': '8072',
+            }),
+        ]"/>
+        </record>
+
+        <!-- Template para Odoo 15 -->
+        <record id="docker_compose_template_odoo15" model="docker.compose.template">
+            <field name="name">Odoo 15</field>
+            <field name="sequence">30</field>
+            <field name="active">True</field>
+            <field name="template_dc_body"><![CDATA[
+version: '2'
+services:
+  db:
+    image: postgres:{{POSTGRES-VERSION}}
+    user: root
+    environment:
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+      - POSTGRES_DB=postgres
+    restart: always
+    volumes:
+      - ./postgresql:/var/lib/postgresql/data
+
+  odoo15:
+    image: odoo:{{ODOO-VERSION}}
+    user: root
+    depends_on:
+      - db
+    ports:
+      - "{{HTTP-PORT}}:8069"
+      - "{{LONGPOLLING-PORT}}:8072"
+    tty: true
+    command: --
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo
+    volumes:
+      - ./addons:/mnt/extra-addons
+      - ./etc:/etc/odoo
+      - ./data:/var/lib/odoo
+    restart: always
+]]></field>
+            <field name="variable_ids" eval="[
+            (5, 0, 0),
+            (0, 0, {
+                'name': '{{POSTGRES-VERSION}}',
+                'demo_value': '12',
+            }),
+            (0, 0, {
+                'name': '{{ODOO-VERSION}}',
+                'demo_value': '15',
+            }),
+            (0, 0, {
+                'name': '{{HTTP-PORT}}',
+                'demo_value': '8069',
+            }),
+            (0, 0, {
+                'name': '{{LONGPOLLING-PORT}}',
+                'demo_value': '8072',
+            }),
+        ]"/>
+        </record>
+
+    </data>
+</odoo>
