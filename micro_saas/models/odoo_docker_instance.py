@@ -202,14 +202,6 @@ class OdooDockerInstance(models.Model):
             self.add_to_log("[INFO] Docker Compose command executed successfully")
             self.write({'state': 'running'})
         except Exception as e:
-            # Maneja cualquier otro error que pueda ocurrir al ejecutar Docker Compose
-            # Imprimir el stderr para obtener más detalles
-            cmd = f"docker-compose -f {modified_path} up -d"
-            self.add_to_log("[ERROR] Error to execute docker-compose command %s" % cmd)
-            if hasattr(e, 'stderr') and e.stderr:
-                self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8'))
-            else:
-                self.add_to_log("[ERROR]  " + str(e))
             self.write({'state': 'error'})
 
     def stop_instance(self):
@@ -277,8 +269,11 @@ class OdooDockerInstance(models.Model):
             return result
         except Exception as e:
             self.add_to_log(f"Error to execute command: {str(e)}")
-            self.add_to_log("**** Execute the following command manually from the terminal for more details ****")
-            self.add_to_log("**** " + cmd + " ****")
+            self.add_to_log("**** Execute the following command manually from the terminal for more details ****" + cmd + " ****")
+            if hasattr(e, 'stderr') and e.stderr:
+                self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8'))
+            else:
+                self.add_to_log("[ERROR]  " + str(e))
 
     def _makedirs(self, path):
         try:
