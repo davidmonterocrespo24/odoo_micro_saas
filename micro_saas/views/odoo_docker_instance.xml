@@ -8,7 +8,8 @@
             <form string="Odoo Docker Instance">
                 <header>
                     <button string="Start Instance" type="object" name="start_instance"
-                            class="oe_highlight o_button_icon o_icon_play" invisible="state in ('draft','error','stopped')"/>
+                            class="oe_highlight o_button_icon o_icon_play"
+                            invisible="state in ('draft','error','stopped')"/>
                     <button string="Stop Instance" type="object" name="stop_instance" states="running"
                             class="o_button_icon o_icon_stop"/>
                     <button string="Restart Instance" type="object" name="restart_instance" states="running"
@@ -18,16 +19,16 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="name" />
+                            <field name="name"/>
                             <field name="instance_url" readonly="1" widget="url"/>
                             <field name="http_port" readonly="state != 'draft'"/>
                             <field name="longpolling_port" readonly="state != 'draft'"/>
                         </group>
                         <group>
-                            <field name="template_id" readonly="state != 'draft'" />
-                            <field name="addons_path" readonly="state != 'draft'" />
-                            <field name="user_path" readonly="state != 'draft'" />
-                            <field name="instance_data_path" readonly="state != 'draft'" />
+                            <field name="template_id" readonly="state != 'draft'"/>
+                            <field name="addons_path" readonly="state != 'draft'"/>
+                            <field name="user_path" readonly="state != 'draft'"/>
+                            <field name="instance_data_path" readonly="state != 'draft'"/>
                             <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                         </group>
                     </group>
