@@ -268,7 +268,8 @@ class OdooDockerInstance(models.Model):
             return result
         except Exception as e:
             self.add_to_log(f"Error to execute command: {str(e)}")
-            self.add_to_log("**** Execute the following command manually from the terminal for more details ****" + cmd + " ****")
+            self.add_to_log("[INFO] **** Execute the following command manually from the terminal for more details "
+                            "****  " + cmd)
             if hasattr(e, 'stderr') and e.stderr:
                 self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8'))
             else:
