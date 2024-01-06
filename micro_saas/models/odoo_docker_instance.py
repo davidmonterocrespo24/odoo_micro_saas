@@ -199,7 +199,6 @@ class OdooDockerInstance(models.Model):
             # Ejecuta el comando de Docker Compose para levantar la instancia
             cmd = f"docker-compose -f {modified_path} up -d"
             self.excute_command(cmd, shell=True, check=True)
-            self.add_to_log("[INFO] Docker Compose command executed successfully")
             self.write({'state': 'running'})
         except Exception as e:
             self.write({'state': 'error'})
@@ -274,6 +273,7 @@ class OdooDockerInstance(models.Model):
                 self.add_to_log("[ERROR]  " + e.stderr.decode('utf-8'))
             else:
                 self.add_to_log("[ERROR]  " + str(e))
+            raise e
 
     def _makedirs(self, path):
         try:
