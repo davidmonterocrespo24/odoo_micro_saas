@@ -65,8 +65,12 @@ class DockerComposeTemplate(models.Model):
             to_create += [{'name': var_name} for var_name in set(new_body_variable_names)]
             to_delete += deleted_body_variables
 
-            update_commands = [Command.delete(to_delete_id) for to_delete_id in to_delete] + [Command.create(vals) for
-                                                                                              vals in to_create]
+            #update_commands = [Command.delete(to_delete_id) for to_delete_id in to_delete] + [Command.create(vals) for
+            #                                                                                  vals in to_create]
+            Variable= self.env['docker.compose.template.variable']
+            update_commands = [Variable.browse(to_delete_id).unlink() for to_delete_id in to_delete] + [Variable.create(vals) for
+                                                                                        vals in to_create]
+
             if update_commands:
                 tmpl.variable_ids = update_commands
 
