@@ -13,6 +13,6 @@ class RepositoryRepoLine(models.Model):
     _description = 'Repository and Branch'
 
     name = fields.Char(string='Branch Name')
-    repository_id = fields.Many2one('repository.repo', string='Repository')
+    repository_id = fields.Many2one('repository.repo', string='Repository', ondelete='cascade')
     instance_id = fields.Many2one('odoo.docker.instance', string='Instance')
     is_clone = fields.Boolean(string='Is Clone')
