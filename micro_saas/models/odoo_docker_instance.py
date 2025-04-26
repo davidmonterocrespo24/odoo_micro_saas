@@ -83,9 +83,10 @@ class OdooDockerInstance(models.Model):
 
     @api.depends('http_port')
     def _compute_instance_url(self):
-        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-        base_url = base_url.split(':')
-        base_url = base_url[0] + ':' + base_url[1] + ':'
+        from urllib.parse import urlparse
+        ...
+                parsed = urlparse(self.env['ir.config_parameter'].sudo().get_param('web.base.url'))
+                base_url = f"{parsed.scheme}://{parsed.hostname}:"
         for instance in self:
             if not instance.http_port:
                 continue
