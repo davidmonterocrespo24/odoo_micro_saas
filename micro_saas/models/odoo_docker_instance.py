@@ -107,8 +107,10 @@ class OdooDockerInstance(models.Model):
         instances = self.env['odoo.docker.instance'].search([])
         # crear una lista con los puertos de las instancias
         ports = []
-        for instance in instances:
+        if instance.http_port:
             ports.append(int(instance.http_port))
+        if instance.longpolling_port:
+            ports.append(int(instance.longpolling_port))
             ports.append(int(instance.longpolling_port))
 
         for port in range(start_port, end_port + 1):
