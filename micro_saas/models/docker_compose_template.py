@@ -85,7 +85,9 @@ class DockerComposeTemplate(models.Model):
                                                                      demo_fallback=True)
 
     @api.depends('template_postgres_conf', 'variable_ids', 'is_result_postgres_conf')
-    @api.onchange('template_postgres_conf', 'variable_ids', 'is_result_postgres_conf')
+    variables = {re.escape(var.name): (var.demo_value if demo_fallback else ' ') for var in self.variable_ids}
+    pattern = re.compile('|'.join(variables))
+    result_body = pattern.sub(lambda m: variables[re.escape(m.group(0))], template_body or '')
     def _compute_result_postgres_conf(self):
         for template in self:
             template.result_postgres_conf = template._get_formatted_body(template_body=template.template_postgres_conf,
