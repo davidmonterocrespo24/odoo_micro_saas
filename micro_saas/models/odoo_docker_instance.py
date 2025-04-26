@@ -129,6 +129,7 @@ class OdooDockerInstance(models.Model):
             finally:
                 sock.close()
         self.add_to_log("[ERROR] No se encontraron puertos disponibles en el rango especificado.")
+        raise RuntimeError("No available ports found in the specified range")
 
     def _update_docker_compose_file(self):
         # Ruta donde se guardará el archivo docker-compose.yml modificado
