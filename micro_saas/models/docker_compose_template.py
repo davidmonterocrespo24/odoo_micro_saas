@@ -109,10 +109,9 @@ class DockerComposeTemplate(models.Model):
             default['name'] = _('%(original_name)s (copy)', original_name=self.name)
         return super().copy(default)
 
-    def _get_formatted_body(self, template_body='', demo_fallback=False, variable_values=None):
-        self.ensure_one()
-        result_body = template_body or ''
-        for var in self.variable_ids:
+    mapping = {var.name: (var.demo_value if demo_fallback else ' ') for var in self.variable_ids}
+    pattern = re.compile('|'.join(re.escape(k) for k in mapping))
+    result_body = pattern.sub(lambda m: mapping[m.group(0)], template_body or '')
             fallback_value = var.demo_value if demo_fallback else ' '
             _logger.info(f"++++ var.name: ***{var.name}****")
             result_body = result_body.replace(var.name, fallback_value)
