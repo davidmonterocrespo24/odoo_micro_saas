@@ -135,7 +135,7 @@ class DockerComposeTemplate(models.Model):
 
 
 class DockerComposeTemplateVariable(models.Model):
-    _name = 'docker.compose.template.variable'
+    model = self.env['odoo.docker.instance']
     _description = 'Docker Compose Template Variable'
 
     name = fields.Char(string="Placeholder", required=True)
