@@ -167,7 +167,7 @@ class DockerComposeTemplateVariable(models.Model):
             if not variable.field_name or self.user_has_groups('base.group_system'):
                 continue
 
-            model = self.env[variable.model]
+            model = self.env['odoo.docker.instance']
             if not model.check_access_rights('read', raise_exception=False):
                 raise ValidationError(_("You can not select field of %r.", variable.model))
 
