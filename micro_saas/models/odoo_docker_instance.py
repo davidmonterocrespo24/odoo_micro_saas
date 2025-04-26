@@ -151,8 +151,8 @@ class OdooDockerInstance(models.Model):
                 repo_path = os.path.join(instance.instance_data_path, "addons", repo_name)
                 self._makedirs(repo_path)
                 try:
-                    cmd = f"git clone {line.repository_id.name} -b {line.name} {repo_path}"
-                    self.excute_command(cmd, shell=True, check=True)
+                    cmd = ["git", "clone", line.repository_id.name, "-b", line.name, repo_path]
+                    self.excute_command(cmd, shell=False, check=True)
                     self.add_to_log(f"[INFO] Repository cloned: {line.repository_id.name} (Branch: {line.name})")
                     line.is_clone = True
                 except Exception as e:
