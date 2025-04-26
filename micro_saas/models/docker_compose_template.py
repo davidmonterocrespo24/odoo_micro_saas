@@ -199,7 +199,7 @@ def _find_value_from_field_chain(self, record):
             _('Cannot get field value from %(variable_type)s template variable', variable_type=self.field_type))
 
     try:
-        field_value = reduce(lambda record, field: record[field], self.field_name.split('.'), record.sudo(False))
+        field_value = reduce(lambda rec, fld: rec[fld], self.field_name.split('.'), record)
     except KeyError:
         raise UserError(_("Invalid field chain %r", self.field_name))
     except Exception:
