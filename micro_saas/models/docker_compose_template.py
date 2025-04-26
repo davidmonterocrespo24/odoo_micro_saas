@@ -167,7 +167,36 @@ class DockerComposeTemplateVariable(models.Model):
             if not variable.field_name or self.user_has_groups('base.group_system'):
                 continue
 
-            model = self.env[variable.model]
+            def _get_variables_value(self, record):
+                value_by_name = {}
+                for variable in self:
+                    if variable.field_type == 'field':
+                        value = variable._find_value_from_field_chain(record)
+                    else:
+                        value = variable.demo_value
+                    value_by_name[variable.name] = str(value) if value else ''
+                return value_by_name
+            
+            def _find_value_from_field_chain(self, record):
+                self.ensure_one()
+                if len(record) != 1:
+                    raise UserError(_('Fetching field value for template variable must use a single record'))
+                if self.field_type != 'field':
+                    raise UserError(_('Cannot get field value from %s template variable') % self.field_type)
+                try:
+                    field_value = reduce(lambda rec, fld: rec[fld], self.field_name.split('.'), record.sudo(False))
+                except KeyError:
+                    raise UserError(_('Invalid field chain %r') % self.field_name)
+                except Exception:
+                    raise UserError(_('Not able to get the value of field %r') % self.field_name)
+                return ' '.join(v.display_name for v in field_value) if isinstance(field_value, models.Model) else field_value
+            
+            def _extract_variable_index(self):
+                self.ensure_one()
+                try:
+                    return int(self.name.lstrip('{{').rstrip('}}'))
+                except ValueError:
+                    return None
             if not model.check_access_rights('read', raise_exception=False):
                 raise ValidationError(_("You can not select field of %r.", variable.model))
 
