@@ -201,8 +201,8 @@ def _find_value_from_field_chain(self, record):
     try:
         field_value = reduce(lambda record, field: record[field], self.field_name.split('.'), record.sudo(False))
     except KeyError:
-        raise UserError(_("Invalid field chain %r", self.field_name))
-    except Exception:
+        except (AttributeError, ValueError, TypeError) as exc:
+            raise UserError(_("Not able to get the value of field %r: %s", self.field_name, exc))
         raise UserError(_("Not able to get the value of field %r", self.field_name))
     if isinstance(field_value, models.Model):
         return ' '.join(value.display_name for value in field_value)
