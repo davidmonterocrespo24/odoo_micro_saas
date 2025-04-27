@@ -172,7 +172,7 @@ class DockerComposeTemplateVariable(models.Model):
                 raise ValidationError(_("You can not select field of %r.", variable.model))
 
             if variable.field_name not in model:
-                raise ValidationError(_("Invalid field name: %r", variable.field_name))
+                raise ValidationError(_("Invalid field name: %r") % variable.field_name)
 
 
 def _get_variables_value(self, record):
