@@ -127,7 +127,7 @@ class DockerComposeTemplate(models.Model):
             'res_model': 'odoo.docker.instance',
             'view_mode': 'form',
             'target': 'current',
-            'context': {
+            'default_name': f"{self.name or ''} from Template",
                 'default_name': self.name + " from Template",
                 'default_template_id': self.id,
             }
