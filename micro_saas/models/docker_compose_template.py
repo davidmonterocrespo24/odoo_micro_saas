@@ -105,9 +105,9 @@ class DockerComposeTemplate(models.Model):
     def copy(self, default=None):
         self.ensure_one()
         default = default or {}
-        if not default.get('name'):
+        default = (default or {}).copy()
+        if 'name' not in default:
             default['name'] = _('%(original_name)s (copy)', original_name=self.name)
-        return super().copy(default)
 
     def _get_formatted_body(self, template_body='', demo_fallback=False, variable_values=None):
         self.ensure_one()
