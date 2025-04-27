@@ -169,7 +169,7 @@ class DockerComposeTemplateVariable(models.Model):
 
             model = self.env[variable.model]
             if not model.check_access_rights('read', raise_exception=False):
-                raise ValidationError(_("You can not select field of %r.", variable.model))
+                raise ValidationError(_("You can not select field of %r.") % variable.model)
 
             if variable.field_name not in model:
                 raise ValidationError(_("Invalid field name: %r", variable.field_name))
