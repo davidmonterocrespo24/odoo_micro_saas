@@ -181,7 +181,7 @@ def _get_variables_value(self, record):
         if variable.field_type == 'field':
             value = variable._find_value_from_field_chain(record)
         else:
-            value = variable.demo_value
+            value_str = str(value) if value is not None else ''
 
         value_str = value and str(value) or ''
         value_by_name[variable.name] = value_str
