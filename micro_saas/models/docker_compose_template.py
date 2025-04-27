@@ -92,6 +92,7 @@ class DockerComposeTemplate(models.Model):
                                                                          demo_fallback=True)
 
     @api.model_create_multi
+    @api.model_create_multi
     def create(self, vals_list):
         records = super().create(vals_list)
         records.variable_ids._check_field_name()
